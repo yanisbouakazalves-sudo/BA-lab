@@ -17,47 +17,42 @@ By combining applied microbiology (PGPR strains, ligninolytic fungi, seaweed hyd
 
 The platform is structured around four complementary technological pillars forming a circular bio-economy loop:
 
-```mermaid
-graph TD;
-    A["SARL B.A. LAB HUB"] --> B["1. Bio-Inputs and Biostimulants"];
-    A --> C["2. Modular Myciculture"];
-    A --> D["3. In Vitro Micropropagation"];
-    A --> E["4. Frugal Hardware and IoT"];
+| Pillar | Core Technologies | Key Applications & Impact |
+| :--- | :--- | :--- |
+| **1. Bio-Inputs & Biostimulants** | Seaweed hydrolysates, PGPR (*Bacillus spp.*), *Trichoderma spp.*, Biochar matrices | Soil regeneration, biological pest control, and living Technosoil activation. |
+| **2. Modular Myciculture** | Edible & medicinal strains (*Pleurotus*, *Hericium*, *Agrocybe*, *Cordyceps*) | Waste upcycling into fertile substrates, myco-materials, and high-value biomass. |
+| **3. In Vitro Micropropagation** | Temporary Immersion Systems (TIS), *Twin-Bottle* bioreactors, RITA modules | High-throughput, low-cost multiplication of elite resilient plant varieties. |
+| **4. Frugal Hardware & IoT** | Laminar flow hoods, PEHD biofermenters, ESP32 climate automation | Local manufacturing of lab gear, water optimization, and automated control. |
 
-    B --> B1["Bio-based formulations, PGPR, Seaweed extracts"];
-    C --> C1["Substrate upcycling, Edible and Medicinal strains"];
-    D --> D1["Low-cost sterile plant multiplication"];
-    E --> E1["ESP32 controllers, Flow hoods, PEHD fermenters"];
-1. Bio-Inputs & Biostimulants
-Bio-based Formulations: Development of seaweed biostimulant hydrolysates, enriched organic extracts, and activated biochar matrices.
+---
 
-Biocontrol & Microbiome: Isolation and propagation of Plant Growth-Promoting Rhizobacteria (PGPR, Bacillus spp.) and biocontrol agents (Trichoderma spp.).
+### 1. Bio-Inputs & Biostimulants
+* **Bio-based Formulations:** Development of seaweed biostimulant hydrolysates, enriched organic extracts, and activated biochar matrices.
+* **Biocontrol & Microbiome:** Isolation and propagation of Plant Growth-Promoting Rhizobacteria (PGPR, *Bacillus spp.*) and biocontrol agents (*Trichoderma spp.*).
 
-2. Modular Myciculture & Bioremediation
-Fungal Production: Optimized incubation and fruiting protocols for edible and medicinal species (Pleurotus spp., Hericium erinaceus, Agrocybe aegerita, Cordyceps militaris).
+### 2. Modular Myciculture & Bioremediation
+* **Fungal Production:** Optimized incubation and fruiting protocols for edible and medicinal species (*Pleurotus spp.*, *Hericium erinaceus*, *Agrocybe aegerita*, *Cordyceps militaris*).
+* **Biomass & Upcycling:** Processing local lignocellulosic waste into fertile substrates and upcycling co-products into myco-materials and soil amendments.
 
-Biomass & Upcycling: Processing local lignocellulosic waste into fertile substrates and upcycling co-products into myco-materials and soil amendments.
+### 3. In Vitro Plant Micropropagation (TIS)
+* **Temporary Immersion Systems:** Design and deployment of *Twin-Bottle* bioreactors and RITA modules for high-throughput multiplication of resilient elite plant varieties.
+* **Media Autonomy:** Custom liquid and gelled culture media formulations to eliminate reliance on expensive imported laboratory reagents.
 
-3. In Vitro Plant Micropropagation (TIS)
-Temporary Immersion Systems: Design and deployment of Twin-Bottle bioreactors and RITA modules for high-throughput multiplication of resilient elite plant varieties.
+### 4. Frugal Engineering & IoT Systems
+* **"Made in Algeria" Hardware:** In-house engineering of sterile laboratory equipment and substrate processing tools (HEPA laminar flow hoods, optimized straw shredders, horizontal PEHD biofermenters, modified mixers).
+* **IoT Climate Regulation:** Microcontroller systems (ESP32 / Arduino) paired with sensor arrays (Temperature, Humidity, CO2) for real-time automation of bioclimatic greenhouses and incubation chambers.
 
-Media Autonomy: Custom liquid and gelled culture media formulations to eliminate reliance on expensive imported laboratory reagents.
+---
 
-4. Frugal Engineering & IoT Systems
-"Made in Algeria" Hardware: In-house engineering of sterile laboratory equipment and substrate processing tools (HEPA laminar flow hoods, optimized straw shredders, horizontal PEHD biofermenters, modified mixers).
+## 🛠️ Repository Organization
 
-IoT Climate Regulation: Microcontroller systems (ESP32 / Arduino) paired with sensor arrays (Temperature, Humidity, CO2) for real-time automation of bioclimatic greenhouses and incubation chambers.
-
-🛠️ Repository Organization
 This repository centralizes technical documentation, engineering schematics, Standard Operating Procedures (SOPs), and source code for the B.A. LAB ecosystem:
 
-Plaintext
+```text
 .
 ├── 📂 hardware/            # 3D schematics, manufacturing plans, and BOMs (Hoods, Fermenters, TIS)
 ├── 📂 firmware/            # ESP32/Arduino source code for climate regulation and irrigation loops
-├── 📂 biotech-sops/        # Standard Operating Procedures (Media prep, inoculation, sterilization)
-├── 📂 bio-inputs/          # Technical datasheets for formulations (Seaweed hydrolysates, biochar, PGPR complexes)
-└── 📂 docs/                # Facility layout schematics, zoning, and administrative documentation
+
 🎯 Industrial Vision & Impact
 Technological Sovereignty: Replacing costly imported lab gear and reagents with locally engineered, calibrated, and maintained hardware.
 
@@ -71,3 +66,6 @@ SOP Democratization: Standardizing complex lab procedures into robust protocols 
 Hardware schematics and source code shared in this repository are subject to specific licenses detailed within each directory (/hardware under Open Hardware License, /firmware under MIT or proprietary license depending on the module).
 
 📧 Contact & Support: SARL B.A. LAB — Sétif, Algeria.
+├── 📂 biotech-sops/        # Standard Operating Procedures (Media prep, inoculation, sterilization)
+├── 📂 bio-inputs/          # Technical datasheets for formulations (Seaweed hydrolysates, biochar, PGPR complexes)
+└── 📂 docs/                # Facility layout schematics, zoning, and administrative documentation
