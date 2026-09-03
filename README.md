@@ -21,15 +21,15 @@ The platform is structured around four complementary technological pillars formi
 graph TD
     HUB["SARL B.A. LAB HUB"]
     
-    HUB --> P1["1. Bio-Inputs & Biostimulants"]
+    HUB --> P1["1. Bio-Inputs and Biostimulants"]
     HUB --> P2["2. Modular Myciculture"]
     HUB --> P3["3. In Vitro Micropropagation"]
-    HUB --> P4["4. Frugal Hardware & IoT"]
+    HUB --> P4["4. Frugal Hardware and IoT"]
 
-    P1 --- D1["Bio-based formulations, PGPR, Seaweed extracts"]
-    P2 --- D2["Upcycling substrates, edible & medicinal strains"]
-    P3 --- D3["Sterile plant low-cost multiplication"]
-    P4 --- D4["ESP32 controllers, Laminar flow hoods, PEHD fermenters"]
+    P1 --> D1["Bio-based formulations, PGPR, Seaweed extracts"]
+    P2 --> D2["Upcycling substrates, edible and medicinal strains"]
+    P3 --> D3["Sterile plant low-cost multiplication"]
+    P4 --> D4["ESP32 controllers, Laminar flow hoods, PEHD fermenters"]
 1. Bio-Inputs & Biostimulants
 Bio-based Formulations: Development of seaweed biostimulant hydrolysates, enriched organic extracts, and activated biochar matrices.
 
