@@ -1,40 +1,97 @@
-#  B.A-LAB — Integrated Bio-Economic Platform
+```markdown
+# SARL B.A. LAB — Integrated Agritech & Environmental Biotechnology Platform
 
-> **Our Vision:** Deploy an autonomous, robust, and versatile biotechnological toolkit to master the entire value chain of soil regeneration, accelerated biomass decomposition, and mycoremediation across diverse environmental contexts.
+![Status](https://img.shields.io/badge/Status-Active_R%26D-brightgreen)
+![Focus](https://img.shields.io/badge/Focus-Biotech_%26_Frugal_Engineering-blue)
+![Location](https://img.shields.io/badge/Location-S%C3%A9tif%2C_Algeria-orange)
+![License](https://img.shields.io/badge/License-Proprietary_%2F_Open_Hardware-lightgrey)
 
----
+## 📌 Executive Overview
 
-## 1. Project Overview
+**SARL B.A. LAB** is an agricultural biotechnology and environmental engineering enterprise based in Sétif, Algeria. Our mission is to deploy an integrated bio-economic platform to achieve input sovereignty, automate environmental control, and regenerate degraded soils.
 
-SARL B.A. LAB breaks dependency on expensive imported equipment and heavy chemical inputs by merging advanced environmental microbiology with frugal industrial engineering (*Low-Tech*). The project is built around a closed-loop circular ecosystem designed to solve soil degradation, organic waste management, and agricultural efficiency. 
-
-While highly effective in extreme environments (such as our arid soil restoration case study in El Bayadh), the platform's methodology is universally scalable to any degraded, depleted, or contaminated ecosystem.
-
-### Three Core Pillars:
-*   **Environmental Biotechnology:** Selection and propagation of local ligninolytic strains and biocontrol agents (*Trichoderma*) for bioremediation, soil detoxification, and accelerated decomposition of complex organic matter.
-*   **Frugal & Robust Hardware:** Local eco-design and manufacturing of standardized, low-cost laboratory infrastructure (laminar flow hoods, Twin-Bottle temporary immersion systems, modular autoclaves) that are easily repairable and scalable.
-*   **IoT Automation & Data:** Dynamic, data-driven regulation of environmental parameters in green houses and bioreactors to optimize growth cycles and minimize manual human intervention.
+By combining applied microbiology (PGPR strains, ligninolytic fungi, seaweed hydrolysates) with frugal engineering (*Low-Tech High-Efficiency*) and IoT automation, B.A. LAB designs autonomous, modular, turnkey solutions tailored to local and arid pedo-climatic constraints.
 
 ---
 
-## 2. System Configuration & Architecture
+## 🏛️ System Architecture & Core Pillars
 
-The platform operates as a fully vertically integrated system, configured as follows:
+The platform is structured around four complementary technological pillars forming a circular bio-economy loop:
 
-| System Layer | Key Components | Agronomic & Industrial Impact |
-| :--- | :--- | :--- |
-| **Biology (Inputs)** | Ligninolytic strains, *Trichoderma*, Custom Biochar matrix | Rapid carbonaceous matter digestion, natural biocontrol against pathogens, and activation of living "Technosoils". |
-| **Hardware (Infrastructure)** | Metal framing, PVC manifolds, HEPA filtration, modular reactors | Secured sterile handling, clean cloning, and low-cost multiplication of high-quality fungal and plant biomass. |
-| **Digital (IoT)** | Sensors (Temp, Humidity, CO2), ESP32/Arduino microcontrollers, Actuators | Real-time monitoring, automated targeted irrigation loops, and drastic reduction in water consumption. |
-| **Valorization (Outputs)** | Acclimatized vitroplants (Almond, Artemisia), Myco-materials | High-yield crop production with superior nutrient density (validated via Brix metrics) and upcycling of waste into biodegradable items. |
+
+```
+
+```
+                    ┌────────────────────────────────────────┐
+                    │          SARL B.A. LAB HUB             │
+                    └───────────────────┬────────────────────┘
+                                        │
+    ┌───────────────────┬───────────────┴───────────────┬───────────────────┐
+    ▼                   ▼                               ▼                   ▼
+
+```
+
+┌───────────────┐   ┌───────────────┐               ┌───────────────┐   ┌───────────────┐
+│ 1. BIO-INPUTS │   │ 2. MYCULTURE  │               │3.IN VITRO PROP│   │ 4. HARDWARE   │
+│ & STIMULANTS  │   │ & BIOMASS     │               │ (SIT / RITA)  │   │ & IOT SYSTEMS │
+└───────┬───────┘   └───────┬───────┘               └───────┬───────┘   └───────┬───────┘
+│                   │                               │                   │
+Bio-based             Upcycling substrates,           Sterile plant       ESP32 controllers,
+formulations,         edible & medicinal strains      low-cost            Laminar flow hoods,
+PGPR, MARINOR                                         multiplication      PEHD fermenters
+
+```
+
+### 1. Bio-Inputs & Biostimulants
+* **Bio-based Formulations:** Development of seaweed biostimulant hydrolysates (*MARINOR* product line), enriched organic extracts, and activated biochar matrices.
+* **Biocontrol & Microbiome:** Isolation and propagation of Plant Growth-Promoting Rhizobacteria (PGPR, *Bacillus spp.*) and biocontrol agents (*Trichoderma spp.*).
+
+### 2. Modular Myciculture & Bioremediation
+* **Fungal Production:** Optimized incubation and fruiting protocols for edible and medicinal species (*Pleurotus spp.*, *Hericium erinaceus*, *Agrocybe aegerita*, *Cordyceps militaris*).
+* **Biomass & Upcycling:** Processing local lignocellulosic waste into fertile substrates and upcycling co-products into myco-materials and soil amendments.
+
+### 3. In Vitro Plant Micropropagation (TIS)
+* **Temporary Immersion Systems:** Design and deployment of *Twin-Bottle* bioreactors and RITA modules for high-throughput multiplication of resilient elite plant varieties.
+* **Media Autonomy:** Custom liquid and gelled culture media formulations to eliminate reliance on expensive imported laboratory reagents.
+
+### 4. Frugal Engineering & IoT Systems
+* **"Made in Algeria" Hardware:** In-house engineering of sterile laboratory equipment and substrate processing tools (HEPA laminar flow hoods, optimized straw shredders, horizontal PEHD biofermenters, modified mixers).
+* **IoT Climate Regulation:** Microcontroller systems (ESP32 / Arduino) paired with sensor arrays (Temperature, Humidity, CO2) for real-time automation of bioclimatic greenhouses and incubation chambers.
 
 ---
 
-## 3. Technological Impact Goals
+## 🛠️ Repository Organization
 
-1.  **Process Innovation:** Democratize access to advanced plant biotechnology by simplifying Standard Operating Procedures (SOPs), making high-level lab protocols easily executable by local operators on the field.
-2.  **Soil & Humus Resilience:** Restructure depleted, saline, or damaged soils through combined mycromediation and custom substrate formulations to maximize water retention and microbiom stability.
-3.  **Industrial Sovereignty:** Replace costly imported lab and agricultural equipment with reliable "Made in Algeria" hardware designed, optimized, and assembled in-house.
+This repository centralizes technical documentation, engineering schematics, Standard Operating Procedures (SOPs), and source code for the B.A. LAB ecosystem:
+
+```text
+.
+├── 📂 hardware/            # 3D schematics, manufacturing plans, and BOMs (Hoods, Fermenters, TIS)
+├── 📂 firmware/            # ESP32/Arduino source code for climate regulation and irrigation loops
+├── 📂 biotech-sops/        # Standard Operating Procedures (Media prep, inoculation, sterilization)
+├── 📂 bio-inputs/          # Technical datasheets for formulations (MARINOR, biochar, PGPR complexes)
+└── 📂 docs/                # Facility layout schematics, zoning, and administrative documentation
+
+```
 
 ---
-© 2026 SARL B.A. LAB. All rights reserved.
+
+## 🎯 Industrial Vision & Impact
+
+* **Technological Sovereignty:** Replacing costly imported lab gear and reagents with locally engineered, calibrated, and maintained hardware.
+* **Soil Regeneration:** Restructuring degraded, saline, or arid soils through combined active microbiomes and stable humic matrices.
+* **SOP Democratization:** Standardizing complex lab procedures into robust protocols for seamless execution on the field and in production units.
+
+---
+
+## 📜 License & Intellectual Property
+
+© 2026 **SARL B.A. LAB**. All rights reserved.
+
+Hardware schematics and source code shared in this repository are subject to specific licenses detailed within each directory (`/hardware` under Open Hardware License, `/firmware` under MIT or proprietary license depending on the module).
+
+📧 **Contact & Support:** SARL B.A. LAB — Sétif, Algeria.
+
+```
+
+```
