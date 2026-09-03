@@ -1,4 +1,3 @@
-```markdown
 # SARL B.A. LAB — Integrated Agritech & Environmental Biotechnology Platform
 
 ![Status](https://img.shields.io/badge/Status-Active_R%26D-brightgreen)
@@ -18,28 +17,19 @@ By combining applied microbiology (PGPR strains, ligninolytic fungi, seaweed hyd
 
 The platform is structured around four complementary technological pillars forming a circular bio-economy loop:
 
+```mermaid
+graph TD
+    HUB[SARL B.A. LAB HUB]
+    
+    HUB --> P1[1. Bio-Inputs & Biostimulants]
+    HUB --> P2[2. Modular Myciculture]
+    HUB --> P3[3. In Vitro Micropropagation]
+    HUB --> P4[4. Frugal Hardware & IoT]
 
-```
-
-```
-                    ┌────────────────────────────────────────┐
-                    │          SARL B.A. LAB HUB             │
-                    └───────────────────┬────────────────────┘
-                                        │
-    ┌───────────────────┬───────────────┴───────────────┬───────────────────┐
-    ▼                   ▼                               ▼                   ▼
-
-```
-
-┌───────────────┐   ┌───────────────┐               ┌───────────────┐   ┌───────────────┐
-│ 1. BIO-INPUTS │   │ 2. MYCULTURE  │               │3.IN VITRO PROP│   │ 4. HARDWARE   │
-│ & STIMULANTS  │   │ & BIOMASS     │               │ (SIT / RITA)  │   │ & IOT SYSTEMS │
-└───────┬───────┘   └───────┬───────┘               └───────┬───────┘   └───────┬───────┘
-│                   │                               │                   │
-Bio-based             Upcycling substrates,           Sterile plant       ESP32 controllers,
-formulations,         edible & medicinal strains      low-cost            Laminar flow hoods,
-PGPR, MARINOR                                         multiplication      PEHD fermenters
-
+    P1 --- D1[Bio-based formulations, PGPR, MARINOR]
+    P2 --- D2[Upcycling substrates, edible & medicinal strains]
+    P3 --- D3[Sterile plant low-cost multiplication]
+    P4 --- D4[ESP32 controllers, Laminar flow hoods, PEHD fermenters]
 ```
 
 ### 1. Bio-Inputs & Biostimulants
@@ -71,7 +61,6 @@ This repository centralizes technical documentation, engineering schematics, Sta
 ├── 📂 biotech-sops/        # Standard Operating Procedures (Media prep, inoculation, sterilization)
 ├── 📂 bio-inputs/          # Technical datasheets for formulations (MARINOR, biochar, PGPR complexes)
 └── 📂 docs/                # Facility layout schematics, zoning, and administrative documentation
-
 ```
 
 ---
@@ -86,12 +75,7 @@ This repository centralizes technical documentation, engineering schematics, Sta
 
 ## 📜 License & Intellectual Property
 
-© 2026 **SARL B.A. LAB**. All rights reserved.
-
+© 2026 **SARL B.A. LAB**. All rights reserved.  
 Hardware schematics and source code shared in this repository are subject to specific licenses detailed within each directory (`/hardware` under Open Hardware License, `/firmware` under MIT or proprietary license depending on the module).
 
 📧 **Contact & Support:** SARL B.A. LAB — Sétif, Algeria.
-
-```
-
-```
