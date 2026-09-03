@@ -1,6 +1,7 @@
 // ==========================================================================
 // SARL B.A. LAB — Core Environmental Automation Firmware (v1.0.0)
 // Target Hardware: ESP32 DevKitC v4
+// File: firmware/src/main.cpp
 // ==========================================================================
 
 #include <Arduino.h>
@@ -26,8 +27,9 @@ int getSoilMoisturePercent();
 int getCO2Levels();
 
 void setup() {
-    Serial.begin(111500);
+    Serial.begin(115200);
     
+    pinMode(PIN_SOIL_MOISTURE, INPUT);
     pinMode(PIN_RELAY_PUMP, OUTPUT);
     pinMode(PIN_RELAY_FAN, OUTPUT);
     
@@ -35,7 +37,7 @@ void setup() {
     digitalWrite(PIN_RELAY_PUMP, LOW);
     digitalWrite(PIN_RELAY_FAN, LOW);
     
-    Serial.println("[INIT] SARL B.A. LAB Automation System Online.");
+    Serial.println(F("[INIT] SARL B.A. LAB Automation System Online."));
 }
 
 void loop() {
@@ -50,7 +52,7 @@ void loop() {
 
 int getSoilMoisturePercent() {
     int rawAnalog = analogRead(PIN_SOIL_MOISTURE);
-    // Map your specific sensor calibration values (Raw Min/Max to 0-100%)
+    // Map specific sensor calibration values (Raw Min/Max to 0-100%)
     int percent = map(rawAnalog, 4095, 1500, 0, 100); 
     return constrain(percent, 0, 100);
 }
@@ -71,22 +73,22 @@ void readSensorsAndAction() {
     if (currentMoisture < SOIL_MOISTURE_THRESHOLD && !isIrrigating) {
         digitalWrite(PIN_RELAY_PUMP, HIGH);
         isIrrigating = true;
-        Serial.println("[ACTION] Soil dry. Activating Irrigation Pump.");
+        Serial.println(F("[ACTION] Soil dry. Activating Irrigation Pump."));
     } else if (currentMoisture >= (SOIL_MOISTURE_THRESHOLD + 5) && isIrrigating) {
         // Includes a +5% hysteresis to prevent rapid relay clicking
         digitalWrite(PIN_RELAY_PUMP, LOW);
         isIrrigating = false;
-        Serial.println("[ACTION] Target moisture reached. Deactivating Pump.");
+        Serial.println(F("[ACTION] Target moisture reached. Deactivating Pump."));
     }
     
     // --- Ventilation Control Loop ---
     if (currentCO2 > CO2_HIGH_THRESHOLD && !isVentilating) {
         digitalWrite(PIN_RELAY_FAN, HIGH);
         isVentilating = true;
-        Serial.println("[ACTION] Critical CO2 level. Activating Extraction Fan.");
+        Serial.println(F("[ACTION] Critical CO2 level. Activating Extraction Fan."));
     } else if (currentCO2 <= (CO2_HIGH_THRESHOLD - 200) && isVentilating) {
         digitalWrite(PIN_RELAY_FAN, LOW);
         isVentilating = false;
-        Serial.println("[ACTION] CO2 stabilized. Deactivating Fan.");
+        Serial.println(F("[ACTION] CO2 stabilized. Deactivating Fan."));
     }
 }
