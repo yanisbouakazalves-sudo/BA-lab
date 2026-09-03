@@ -18,16 +18,16 @@ By combining applied microbiology (PGPR strains, ligninolytic fungi, seaweed hyd
 The platform is structured around four complementary technological pillars forming a circular bio-economy loop:
 
 ```mermaid
-graph TD
-    A["SARL B.A. LAB HUB"] --> B["1. Bio-Inputs and Biostimulants"]
-    A --> C["2. Modular Myciculture"]
-    A --> D["3. In Vitro Micropropagation"]
-    A --> E["4. Frugal Hardware and IoT"]
+graph TD;
+    A["SARL B.A. LAB HUB"] --> B["1. Bio-Inputs and Biostimulants"];
+    A --> C["2. Modular Myciculture"];
+    A --> D["3. In Vitro Micropropagation"];
+    A --> E["4. Frugal Hardware and IoT"];
 
-    B --> B1["Bio-based formulations, PGPR, Seaweed extracts"]
-    C --> C1["Substrate upcycling, Edible and Medicinal strains"]
-    D --> D1["Low-cost sterile plant multiplication"]
-    E --> E1["ESP32 controllers, Flow hoods, PEHD fermenters"]
+    B --> B1["Bio-based formulations, PGPR, Seaweed extracts"];
+    C --> C1["Substrate upcycling, Edible and Medicinal strains"];
+    D --> D1["Low-cost sterile plant multiplication"];
+    E --> E1["ESP32 controllers, Flow hoods, PEHD fermenters"];
 1. Bio-Inputs & Biostimulants
 Bio-based Formulations: Development of seaweed biostimulant hydrolysates, enriched organic extracts, and activated biochar matrices.
 
