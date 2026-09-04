@@ -1,0 +1,33 @@
+SARL B.A. LAB — Dual Licensing Framework
+
+This repository operates under a hybrid licensing model to encourage open innovation, 
+frugal technology adoption, and research collaboration while protecting core proprietary 
+bio-industrial assets.
+
+----------------------------------------------------------------------------------
+1. FIRMWARE & SOFTWARE (/firmware)
+----------------------------------------------------------------------------------
+Licensed under the MIT License.
+Permission is hereby granted, free of charge, to any person obtaining a copy of 
+this software and associated documentation files, to deal in the Software without 
+restriction, including rights to use, copy, modify, merge, publish, distribute, 
+and sell copies, subject to attribution.
+
+----------------------------------------------------------------------------------
+2. HARDWARE & ENGINEERING SCHEMATICS (/hardware)
+----------------------------------------------------------------------------------
+Licensed under the CERN Open Hardware Licence Version 2 - Permissive (CERN-OHL-P).
+You may redistribute and modify these schematics, 3D designs, and manufacturing files 
+under the terms of the CERN-OHL-P, provided appropriate attribution is given to 
+SARL B.A. LAB.
+
+----------------------------------------------------------------------------------
+3. BIOTECHNOLOGY, FORMULATIONS & DOCS (/bio-inputs, /biotech-sops, /docs)
+----------------------------------------------------------------------------------
+Copyright © 2026 SARL B.A. LAB. All Rights Reserved.
+The Standard Operating Procedures (SOPs), biological formulation profiles, and facility 
+layouts are published for evaluation, educational, and validation purposes. Commercial 
+use, replication of proprietary biological strain complexes, or industrial exploitation 
+without prior written consent from SARL B.A. LAB is strictly prohibited.
+
+Contact & Licensing Inquiries: SARL B.A. LAB — Sétif, Algeria.
