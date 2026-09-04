@@ -60,5 +60,7 @@ This Standard Operating Procedure (SOP) describes the isolation, axenic purifica
 3. Select colonies displaying typical *Bacillus* morphology (creamy-white, dry, irregular/rhizoid margins).
 4. Perform streak-plating three consecutive times on fresh TSA to achieve axenic (pure) monocultures.
 
+📊 5. Quality Control & Screening AssaysAssay ParameterMethod / MediumPositive Acceptance MetricGram StainingMicroscopic observationGram-positive rods, endospore presencePhosphate SolubilizationPikovskaya Agar incubation ($28^\circ\text{C}$, 5 days)Clear halo zone ratio $\frac{\text{Halo Diameter}}{\text{Colony Diameter}} \ge 2.0$Catalase Test$3\%\ \text{H}_2\text{O}_2$ droplet applicationImmediate effervescence ($\text{O}_2$ gas bubble evolution)Purity CheckSingle colony PCR / MicroscopyZero morphological contamination after 48h📜 Strain Preservation & ArchivalTransfer pure isolates into TSB containing $20\%\text{ (v/v)}$ glycerol.Aliquot into sterile cryogenic vials ($1.5\text{mL}$) and store in the B.A. LAB Strain Bank at $-80^\circ\text{C}$ under tracking code BAL-BAC-[YEAR]-[XXX].
+
 ```text
 [ Soil Sample 10g ] ──> [ Shaking 180 RPM ] ──> [ Serial Dilution ] ──> [ Heat Shock 80°C/20min ] ──> [ TSA Isolation ]
