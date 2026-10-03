@@ -3,18 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <title>BA Labs — Culture Tracker</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
       color: #172018;
       background: #f4f6f3;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -33,6 +37,10 @@
     h1 {
       margin: 0 0 6px;
       font-size: 28px;
+    }
+
+    h2 {
+      margin-top: 0;
     }
 
     .subtitle {
@@ -119,6 +127,12 @@
       font-size: 14px;
     }
 
+    .auth-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
     code {
       background: #eef1ee;
       padding: 2px 5px;
@@ -126,7 +140,8 @@
     }
 
     @media (max-width: 700px) {
-      .grid {
+      .grid,
+      .auth-actions {
         grid-template-columns: 1fr;
       }
     }
@@ -134,79 +149,249 @@
 </head>
 
 <body>
+
 <div class="container">
 
   <header>
     <h1>BA Labs — Culture Tracker</h1>
+
     <div class="subtitle">
-      Création d'une culture avec génération automatique du matériel dérivé.
+      Gestion des cultures, générations et matériels biologiques.
     </div>
   </header>
 
+
+  <!-- ========================================================
+       GLOBAL MESSAGE
+       ======================================================== -->
+
   <div id="message"></div>
 
-  <section class="card">
+
+  <!-- ========================================================
+       AUTHENTIFICATION
+       ======================================================== -->
+
+  <section class="card" id="authCard">
+
+    <h2>Accès BA Labs</h2>
+
+    <div class="muted">
+      Connectez-vous avec le compte BA Labs.
+      Le premier accès rattache automatiquement le compte
+      à l'organisation <code>BA-LABS</code>.
+    </div>
+
+    <label for="authEmail">
+      Email
+    </label>
+
+    <input
+      id="authEmail"
+      type="email"
+      autocomplete="email"
+      value="ba.labs.redev@gmail.com"
+    >
+
+    <label for="authPassword">
+      Mot de passe
+    </label>
+
+    <input
+      id="authPassword"
+      type="password"
+      autocomplete="current-password"
+      placeholder="Mot de passe"
+    >
+
+    <div class="auth-actions">
+
+      <button
+        id="signInButton"
+        type="button"
+      >
+        Se connecter
+      </button>
+
+      <button
+        id="signUpButton"
+        type="button"
+      >
+        Créer le compte
+      </button>
+
+    </div>
+
+    <div
+      id="authStatus"
+      class="info muted"
+    >
+      Non connecté.
+    </div>
+
+    <button
+      id="signOutButton"
+      type="button"
+      style="display:none"
+    >
+      Se déconnecter
+    </button>
+
+  </section>
+
+
+  <!-- ========================================================
+       TRACKER
+       ======================================================== -->
+
+  <section
+    class="card"
+    id="trackerCard"
+    style="display:none"
+  >
+
     <h2>Nouvelle culture</h2>
 
-    <label for="strain">Souche / ressource biologique</label>
+
+    <!-- SOUCHE -->
+
+    <label for="strain">
+      Souche / ressource biologique
+    </label>
+
     <select id="strain">
-      <option value="">Chargement...</option>
+
+      <option value="">
+        Chargement...
+      </option>
+
     </select>
 
-    <div id="strainInfo" class="info muted">
+
+    <div
+      id="strainInfo"
+      class="info muted"
+    >
       Sélectionnez une souche.
     </div>
 
-    <label for="cultureCode">Code de culture</label>
+
+    <!-- CODE CULTURE -->
+
+    <label for="cultureCode">
+      Code de culture
+    </label>
+
     <input
       id="cultureCode"
       type="text"
       placeholder="Ex. CULT-PO-P80-001"
     >
 
+
     <div class="grid">
 
-      <div>
-        <label for="cultureType">Type de culture</label>
-        <select id="cultureType">
-          <option value="">Chargement...</option>
-        </select>
-      </div>
+
+      <!-- TYPE -->
 
       <div>
-        <label for="protocol">Protocole</label>
-        <select id="protocol">
-          <option value="">Chargement...</option>
+
+        <label for="cultureType">
+          Type de culture
+        </label>
+
+        <select id="cultureType">
+
+          <option value="">
+            Chargement...
+          </option>
+
         </select>
+
+      </div>
+
+
+      <!-- PROTOCOLE -->
+
+      <div>
+
+        <label for="protocol">
+          Protocole
+        </label>
+
+        <select id="protocol">
+
+          <option value="">
+            Chargement...
+          </option>
+
+        </select>
+
       </div>
 
     </div>
 
-    <label for="startedAt">Date de démarrage</label>
-    <input id="startedAt" type="datetime-local">
 
-    <div id="generationInfo" class="info">
+    <!-- DATE -->
+
+    <label for="startedAt">
+      Date de démarrage
+    </label>
+
+    <input
+      id="startedAt"
+      type="datetime-local"
+    >
+
+
+    <!-- GENERATION -->
+
+    <div
+      id="generationInfo"
+      class="info"
+    >
       Génération : —
     </div>
 
-    <button id="createButton">
+
+    <button
+      id="createButton"
+      type="button"
+    >
       Créer la culture
     </button>
+
   </section>
 
-  <section class="card">
+
+  <!-- ========================================================
+       RESULTAT
+       ======================================================== -->
+
+  <section
+    class="card"
+    id="resultCard"
+    style="display:none"
+  >
+
     <h2>Résultat</h2>
 
-    <div id="result" class="muted">
+    <div
+      id="result"
+      class="muted"
+    >
       Aucune culture créée pour le moment.
     </div>
+
   </section>
 
 </div>
 
+
 <script>
+
 /* ============================================================
-   BA LABS — SUPABASE CONFIGURATION
+   SUPABASE
    ============================================================ */
 
 const SUPABASE_URL =
@@ -227,13 +412,45 @@ const supabaseClient =
    ============================================================ */
 
 let organizationId = null;
+
 let strainOptions = [];
+
 let referenceData = [];
 
 
 /* ============================================================
    DOM
    ============================================================ */
+
+const message =
+  document.getElementById("message");
+
+const authEmail =
+  document.getElementById("authEmail");
+
+const authPassword =
+  document.getElementById("authPassword");
+
+const authStatus =
+  document.getElementById("authStatus");
+
+const signInButton =
+  document.getElementById("signInButton");
+
+const signUpButton =
+  document.getElementById("signUpButton");
+
+const signOutButton =
+  document.getElementById("signOutButton");
+
+const authCard =
+  document.getElementById("authCard");
+
+const trackerCard =
+  document.getElementById("trackerCard");
+
+const resultCard =
+  document.getElementById("resultCard");
 
 const strainSelect =
   document.getElementById("strain");
@@ -262,30 +479,49 @@ const createButton =
 const result =
   document.getElementById("result");
 
-const message =
-  document.getElementById("message");
-
 
 /* ============================================================
-   HELPERS
+   MESSAGES
    ============================================================ */
 
-function showMessage(text, type = "success") {
+function showMessage(
+  text,
+  type = "success"
+) {
+
   message.innerHTML = "";
 
-  const div = document.createElement("div");
-  div.className = `card ${type}`;
+  const div =
+    document.createElement("div");
+
+  div.className =
+    `card ${type}`;
+
   div.textContent = text;
 
   message.appendChild(div);
 }
 
+
 function clearMessage() {
+
   message.innerHTML = "";
+
 }
 
+
+/* ============================================================
+   HTML ESCAPE
+   ============================================================ */
+
 function escapeHtml(value) {
-  if (value === null || value === undefined) return "";
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "";
+  }
 
   return String(value)
     .replaceAll("&", "&amp;")
@@ -297,41 +533,379 @@ function escapeHtml(value) {
 
 
 /* ============================================================
-   LOAD BA LABS ORGANIZATION
+   AUTH — BA LABS CLAIM
    ============================================================ */
 
-async function loadOrganization() {
+async function claimBALabsOrganization() {
 
-  const { data, error } =
-    await supabaseClient
-      .from("organizations")
-      .select("id, code, name")
-      .eq("code", "BA-LABS")
-      .maybeSingle();
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (!session) {
+
+    throw new Error(
+      "Session absente."
+    );
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.functions.invoke(
+      "claim-ba-labs",
+      {
+        body: {}
+      }
+    );
+
 
   if (error) {
+
     throw error;
+
   }
 
-  if (!data) {
+
+  if (!data?.ok) {
+
     throw new Error(
-      "Organisation BA-LABS introuvable dans Supabase."
+      data?.error ||
+      "Rattachement BA-LABS impossible."
     );
+
   }
 
-  organizationId = data.id;
+
+  return data;
 }
 
 
 /* ============================================================
-   LOAD CULTURE CREATION OPTIONS
+   SIGN IN
+   ============================================================ */
+
+async function signIn() {
+
+  clearMessage();
+
+  signInButton.disabled = true;
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient.auth.signInWithPassword({
+
+        email:
+          authEmail.value.trim(),
+
+        password:
+          authPassword.value
+
+      });
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    await refreshAuthUI();
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      error.message ||
+      "Connexion impossible.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    signInButton.disabled = false;
+
+  }
+
+}
+
+
+/* ============================================================
+   SIGN UP
+   ============================================================ */
+
+async function signUp() {
+
+  clearMessage();
+
+  signUpButton.disabled = true;
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email:
+          authEmail.value.trim(),
+
+        password:
+          authPassword.value,
+
+        options: {
+
+          emailRedirectTo:
+            window.location.href
+
+        }
+
+      });
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    if (data.session) {
+
+      await refreshAuthUI();
+
+    }
+
+    else {
+
+      showMessage(
+        "Compte créé. Vérifiez l'email de confirmation, puis revenez sur le tracker.",
+        "success"
+      );
+
+    }
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      error.message ||
+      "Création du compte impossible.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    signUpButton.disabled = false;
+
+  }
+
+}
+
+
+/* ============================================================
+   SIGN OUT
+   ============================================================ */
+
+async function signOut() {
+
+  await supabaseClient.auth.signOut();
+
+  organizationId = null;
+
+  trackerCard.style.display =
+    "none";
+
+  resultCard.style.display =
+    "none";
+
+  signOutButton.style.display =
+    "none";
+
+  authStatus.textContent =
+    "Non connecté.";
+
+}
+
+
+/* ============================================================
+   AUTH UI
+   ============================================================ */
+
+async function refreshAuthUI() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (!session) {
+
+    trackerCard.style.display =
+      "none";
+
+    resultCard.style.display =
+      "none";
+
+    signOutButton.style.display =
+      "none";
+
+    authStatus.textContent =
+      "Non connecté.";
+
+    return;
+
+  }
+
+
+  authStatus.textContent =
+    "Session détectée : " +
+    (
+      session.user.email ||
+      session.user.id
+    );
+
+
+  try {
+
+    /*
+     * Rattachement automatique
+     * à BA-LABS.
+     */
+
+    const claim =
+      await claimBALabsOrganization();
+
+
+    authStatus.textContent =
+      "Connecté : " +
+      (
+        session.user.email ||
+        session.user.id
+      ) +
+      " — BA-LABS : " +
+      (
+        claim.role ||
+        "owner"
+      );
+
+
+    signOutButton.style.display =
+      "block";
+
+
+    trackerCard.style.display =
+      "block";
+
+
+    await initTracker();
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    trackerCard.style.display =
+      "none";
+
+    signOutButton.style.display =
+      "block";
+
+    showMessage(
+      error.message ||
+      "Impossible de rattacher ce compte à BA-LABS.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   ORGANIZATION
+   ============================================================ */
+
+async function loadOrganization() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("organizations")
+      .select(
+        "id, code, name"
+      )
+      .eq(
+        "code",
+        "BA-LABS"
+      )
+      .maybeSingle();
+
+
+  if (error) {
+
+    throw error;
+
+  }
+
+
+  if (!data) {
+
+    throw new Error(
+      "Organisation BA-LABS introuvable dans Supabase."
+    );
+
+  }
+
+
+  organizationId =
+    data.id;
+
+}
+
+
+/* ============================================================
+   STRAINS / MATERIALS
    ============================================================ */
 
 async function loadStrainOptions() {
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
-      .from("v_culture_creation_options")
+      .from(
+        "v_culture_creation_options"
+      )
       .select(`
         organization_id,
         material_id,
@@ -345,56 +919,101 @@ async function loadStrainOptions() {
         scientific_name,
         common_name
       `)
-      .eq("organization_id", organizationId)
-      .order("strain_code");
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .order(
+        "strain_code"
+      );
+
 
   if (error) {
+
     throw error;
+
   }
 
-  strainOptions = data || [];
+
+  strainOptions =
+    data || [];
+
 
   strainSelect.innerHTML =
     '<option value="">Sélectionner une souche...</option>';
 
-  for (const item of strainOptions) {
+
+  for (
+    const item of strainOptions
+  ) {
 
     const option =
-      document.createElement("option");
+      document.createElement(
+        "option"
+      );
 
-    option.value = item.material_id;
+
+    option.value =
+      item.material_id;
+
 
     option.textContent =
-      `${item.strain_code} — ${item.strain_designation || item.scientific_name}`;
+      `${item.strain_code} — ${
+        item.strain_designation ||
+        item.scientific_name
+      }`;
 
-    strainSelect.appendChild(option);
+
+    strainSelect.appendChild(
+      option
+    );
+
   }
 
+
   updateGenerationPreview();
+
 }
 
 
 /* ============================================================
-   LOAD REFERENCE DATA
+   REFERENCE DATA
    ============================================================ */
 
 async function loadReferenceData() {
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
-      .from("v_culture_creation_reference")
+      .from(
+        "v_culture_creation_reference"
+      )
       .select("*")
-      .order("reference_type")
-      .order("code");
+      .order(
+        "reference_type"
+      )
+      .order(
+        "code"
+      );
+
 
   if (error) {
+
     throw error;
+
   }
 
-  referenceData = data || [];
+
+  referenceData =
+    data || [];
+
 
   loadCultureTypes();
+
   loadProtocols();
+
 }
 
 
@@ -407,23 +1026,40 @@ function loadCultureTypes() {
   cultureTypeSelect.innerHTML =
     '<option value="">Sélectionner...</option>';
 
+
   const types =
     referenceData.filter(
-      row => row.reference_type === "culture_type"
+      row =>
+        row.reference_type ===
+        "culture_type"
     );
 
-  for (const item of types) {
+
+  for (
+    const item of types
+  ) {
 
     const option =
-      document.createElement("option");
+      document.createElement(
+        "option"
+      );
 
-    option.value = item.code;
+
+    option.value =
+      item.code;
+
 
     option.textContent =
-      item.label || item.code;
+      item.label ||
+      item.code;
 
-    cultureTypeSelect.appendChild(option);
+
+    cultureTypeSelect.appendChild(
+      option
+    );
+
   }
+
 }
 
 
@@ -436,23 +1072,39 @@ function loadProtocols() {
   protocolSelect.innerHTML =
     '<option value="">Aucun / sélectionner...</option>';
 
+
   const protocols =
     referenceData.filter(
-      row => row.reference_type === "protocol"
+      row =>
+        row.reference_type ===
+        "protocol"
     );
 
-  for (const item of protocols) {
+
+  for (
+    const item of protocols
+  ) {
 
     const option =
-      document.createElement("option");
+      document.createElement(
+        "option"
+      );
 
-    option.value = item.code;
+
+    option.value =
+      item.code;
+
 
     option.textContent =
       `${item.code} — ${item.name}`;
 
-    protocolSelect.appendChild(option);
+
+    protocolSelect.appendChild(
+      option
+    );
+
   }
+
 }
 
 
@@ -465,10 +1117,14 @@ function updateGenerationPreview() {
   const materialId =
     strainSelect.value;
 
+
   const selected =
     strainOptions.find(
-      item => item.material_id === materialId
+      item =>
+        item.material_id ===
+        materialId
     );
+
 
   if (!selected) {
 
@@ -479,30 +1135,78 @@ function updateGenerationPreview() {
       "Génération : —";
 
     return;
+
   }
 
+
   strainInfo.innerHTML = `
-    <strong>${escapeHtml(selected.strain_code)}</strong><br>
+
+    <strong>
+      ${escapeHtml(
+        selected.strain_code
+      )}
+    </strong>
+
+    <br>
+
     Organisme :
-    ${escapeHtml(selected.scientific_name || "—")}<br>
+    ${escapeHtml(
+      selected.scientific_name ||
+      "—"
+    )}
+
+    <br>
+
     Désignation :
-    ${escapeHtml(selected.strain_designation || "—")}<br>
+    ${escapeHtml(
+      selected.strain_designation ||
+      "—"
+    )}
+
+    <br>
+
     Matériel parent :
-    <code>${escapeHtml(selected.material_code)}</code><br>
+    <code>
+      ${escapeHtml(
+        selected.material_code
+      )}
+    </code>
+
+    <br>
+
     Génération actuelle :
-    <strong>G${selected.generation}</strong>
+    <strong>
+      G${selected.generation}
+    </strong>
+
   `;
+
 
   const nextGeneration =
-    Number(selected.generation) + 1;
+    Number(
+      selected.generation
+    ) + 1;
+
 
   generationInfo.innerHTML = `
+
     Matériel parent :
-    <code>${escapeHtml(selected.material_code)}</code>
+    <code>
+      ${escapeHtml(
+        selected.material_code
+      )}
+    </code>
+
     →
+
     nouvelle culture :
-    <strong>G${nextGeneration}</strong>
+
+    <strong>
+      G${nextGeneration}
+    </strong>
+
   `;
+
 }
 
 
@@ -514,199 +1218,352 @@ async function createCulture() {
 
   clearMessage();
 
+
   const materialId =
     strainSelect.value;
+
 
   const cultureCode =
     cultureCodeInput.value.trim();
 
+
   const cultureType =
     cultureTypeSelect.value;
+
 
   const protocolCode =
     protocolSelect.value;
 
+
   const startedAt =
     startedAtInput.value;
 
+
   if (!materialId) {
+
     showMessage(
       "Sélectionnez une souche.",
       "error"
     );
+
     return;
+
   }
 
+
   if (!cultureCode) {
+
     showMessage(
       "Entrez un code de culture.",
       "error"
     );
+
     return;
+
   }
 
+
   if (!cultureType) {
+
     showMessage(
       "Sélectionnez un type de culture.",
       "error"
     );
+
     return;
+
   }
 
-  let protocolVersionId = null;
+
+  let protocolVersionId =
+    null;
+
 
   /*
-   * Si un protocole est sélectionné,
-   * récupérer sa version 1.0.
+   * PROTOCOLE
    */
 
   if (protocolCode) {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("protocols")
         .select("id")
-        .eq("organization_id", organizationId)
-        .eq("code", protocolCode)
+        .eq(
+          "organization_id",
+          organizationId
+        )
+        .eq(
+          "code",
+          protocolCode
+        )
         .maybeSingle();
 
+
     if (error) {
+
       showMessage(
         `Erreur protocole : ${error.message}`,
         "error"
       );
+
       return;
+
     }
+
 
     if (data) {
 
-      const { data: version, error: versionError } =
+      const {
+        data: version,
+        error: versionError
+      } =
         await supabaseClient
           .from("protocol_versions")
           .select("id")
-          .eq("organization_id", organizationId)
-          .eq("protocol_id", data.id)
-          .eq("version", "1.0")
+          .eq(
+            "organization_id",
+            organizationId
+          )
+          .eq(
+            "protocol_id",
+            data.id
+          )
+          .eq(
+            "version",
+            "1.0"
+          )
           .maybeSingle();
 
+
       if (versionError) {
+
         showMessage(
           `Erreur version protocole : ${versionError.message}`,
           "error"
         );
+
         return;
+
       }
 
+
       if (version) {
-        protocolVersionId = version.id;
+
+        protocolVersionId =
+          version.id;
+
       }
+
     }
+
   }
 
 
-  /* ----------------------------------------------------------
-     CREATE THROUGH RPC
-     ---------------------------------------------------------- */
+  /*
+   * CREATION
+   */
 
-  createButton.disabled = true;
-  createButton.textContent = "Création...";
+  createButton.disabled =
+    true;
+
+  createButton.textContent =
+    "Création...";
+
 
   try {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient.rpc(
         "create_culture_with_generation",
         {
-          p_organization_id: organizationId,
 
-          p_code: cultureCode,
+          p_organization_id:
+            organizationId,
 
-          p_culture_type: cultureType,
+          p_code:
+            cultureCode,
 
-          p_parent_material_id: materialId,
+          p_culture_type:
+            cultureType,
 
-          p_parent_culture_id: null,
+          p_parent_material_id:
+            materialId,
+
+          p_parent_culture_id:
+            null,
 
           p_protocol_version_id:
             protocolVersionId,
 
-          p_environment_id: null,
+          p_environment_id:
+            null,
 
-          p_experiment_id: null,
+          p_experiment_id:
+            null,
 
-          p_experimental_unit_id: null,
+          p_experimental_unit_id:
+            null,
 
           p_started_at:
             startedAt
-              ? new Date(startedAt).toISOString()
+              ? new Date(
+                  startedAt
+                ).toISOString()
               : null,
 
           p_metadata: {
-            source: "BA Labs Culture Tracker",
-            interface_version: "1.0"
+
+            source:
+              "BA Labs Culture Tracker",
+
+            interface_version:
+              "1.1"
+
           }
+
         }
       );
 
 
     if (error) {
+
       throw error;
+
     }
 
 
-    /* --------------------------------------------------------
-       RPC RESULT
-       -------------------------------------------------------- */
+    /*
+     * RESULTAT
+     */
 
-    result.className = "success";
+    resultCard.style.display =
+      "block";
+
+
+    result.className =
+      "success";
+
 
     result.innerHTML = `
-      <strong>Culture créée.</strong>
+
+      <strong>
+        Culture créée.
+      </strong>
 
       <br><br>
 
-      <strong>Culture :</strong>
-      <code>${escapeHtml(data.culture_code || cultureCode)}</code>
+      <strong>
+        Culture :
+      </strong>
+
+      <code>
+        ${escapeHtml(
+          data?.culture_code ||
+          cultureCode
+        )}
+      </code>
 
       <br>
 
-      <strong>Matériel dérivé :</strong>
-      <code>${escapeHtml(data.material_code || "—")}</code>
+      <strong>
+        Matériel dérivé :
+      </strong>
+
+      <code>
+        ${escapeHtml(
+          data?.material_code ||
+          "—"
+        )}
+      </code>
 
       <br>
 
-      <strong>Génération :</strong>
-      G${escapeHtml(data.generation ?? "—")}
+      <strong>
+        Génération :
+      </strong>
+
+      G${escapeHtml(
+        data?.generation ??
+        "—"
+      )}
 
       <br>
 
-      <strong>ID culture :</strong>
-      <code>${escapeHtml(data.culture_id || "—")}</code>
+      <strong>
+        ID culture :
+      </strong>
+
+      <code>
+        ${escapeHtml(
+          data?.culture_id ||
+          "—"
+        )}
+      </code>
 
       <br>
 
-      <strong>ID matériel :</strong>
-      <code>${escapeHtml(data.material_id || "—")}</code>
+      <strong>
+        ID matériel :
+      </strong>
+
+      <code>
+        ${escapeHtml(
+          data?.material_id ||
+          "—"
+        )}
+      </code>
+
     `;
+
 
     showMessage(
       "La culture et son matériel dérivé ont été créés dans Supabase."
     );
 
-    cultureCodeInput.value = "";
+
+    cultureCodeInput.value =
+      "";
+
 
     await loadStrainOptions();
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(error);
 
-    result.className = "error";
+
+    resultCard.style.display =
+      "block";
+
+
+    result.className =
+      "error";
+
 
     result.innerHTML = `
-      <strong>Erreur</strong><br><br>
-      ${escapeHtml(error.message || String(error))}
+
+      <strong>
+        Erreur
+      </strong>
+
+      <br><br>
+
+      ${escapeHtml(
+        error.message ||
+        String(error)
+      )}
+
     `;
+
 
     showMessage(
       error.message ||
@@ -714,12 +1571,67 @@ async function createCulture() {
       "error"
     );
 
-  } finally {
+  }
 
-    createButton.disabled = false;
+  finally {
+
+    createButton.disabled =
+      false;
+
     createButton.textContent =
       "Créer la culture";
+
   }
+
+}
+
+
+/* ============================================================
+   INITIALISATION DU TRACKER
+   ============================================================ */
+
+async function initTracker() {
+
+  try {
+
+    await loadOrganization();
+
+    await loadStrainOptions();
+
+    await loadReferenceData();
+
+
+    /*
+     * Date actuelle
+     */
+
+    const now =
+      new Date();
+
+
+    now.setMinutes(
+      now.getMinutes() -
+      now.getTimezoneOffset()
+    );
+
+
+    startedAtInput.value =
+      now.toISOString()
+        .slice(0, 16);
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      `Initialisation impossible : ${error.message}`,
+      "error"
+    );
+
+  }
+
 }
 
 
@@ -732,52 +1644,58 @@ strainSelect.addEventListener(
   updateGenerationPreview
 );
 
+
 createButton.addEventListener(
   "click",
   createCulture
 );
 
 
+signInButton.addEventListener(
+  "click",
+  signIn
+);
+
+
+signUpButton.addEventListener(
+  "click",
+  signUp
+);
+
+
+signOutButton.addEventListener(
+  "click",
+  signOut
+);
+
+
+/*
+ * Si Supabase détecte une modification
+ * de session, on actualise l'interface.
+ */
+
+supabaseClient.auth.onAuthStateChange(
+  () => {
+
+    setTimeout(
+      refreshAuthUI,
+      0
+    );
+
+  }
+);
+
+
 /* ============================================================
-   INITIALIZATION
+   START
    ============================================================ */
 
 async function init() {
 
-  try {
+  await refreshAuthUI();
 
-    await loadOrganization();
-
-    await loadStrainOptions();
-
-    await loadReferenceData();
-
-    /*
-     * Date actuelle par défaut.
-     */
-
-    const now =
-      new Date();
-
-    now.setMinutes(
-      now.getMinutes() -
-      now.getTimezoneOffset()
-    );
-
-    startedAtInput.value =
-      now.toISOString()
-        .slice(0, 16);
-
-  } catch (error) {
-
-    console.error(error);
-
-    showMessage(
-      `Initialisation impossible : ${error.message}`,
-      "error"
-    );
-  }
 }
+
 
 init();
 
