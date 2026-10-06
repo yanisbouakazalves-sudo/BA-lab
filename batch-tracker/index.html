@@ -902,4 +902,3454 @@ const BATCH_STAGES = [
   "harvest",
   "formulation",
   "packaging",
-  "
+  "qc",
+  "release"
+];
+
+
+const BATCH_STAGE_LABELS = {
+
+  preparation:
+    "Préparation",
+
+  sterilization:
+    "Stérilisation",
+
+  inoculation:
+    "Inoculation",
+
+  incubation:
+    "Incubation",
+
+  cultivation:
+    "Cultivation",
+
+  harvest:
+    "Récolte",
+
+  formulation:
+    "Formulation",
+
+  packaging:
+    "Packaging",
+
+  qc:
+    "Contrôle qualité",
+
+  release:
+    "Libération"
+
+};
+
+
+/* ============================================================
+   ELEMENTS DOM
+   ============================================================ */
+
+const message =
+  document.getElementById("message");
+
+const authCard =
+  document.getElementById("authCard");
+
+const authEmail =
+  document.getElementById("authEmail");
+
+const authPassword =
+  document.getElementById("authPassword");
+
+const authStatus =
+  document.getElementById("authStatus");
+
+const signInButton =
+  document.getElementById("signInButton");
+
+const signUpButton =
+  document.getElementById("signUpButton");
+
+const signOutButton =
+  document.getElementById("signOutButton");
+
+const trackerCard =
+  document.getElementById("trackerCard");
+
+const batchCard =
+  document.getElementById("batchCard");
+
+const resultCard =
+  document.getElementById("resultCard");
+
+const strainSelect =
+  document.getElementById("strain");
+
+const strainInfo =
+  document.getElementById("strainInfo");
+
+const cultureCodeInput =
+  document.getElementById("cultureCode");
+
+const cultureTypeSelect =
+  document.getElementById("cultureType");
+
+const protocolSelect =
+  document.getElementById("protocol");
+
+const startedAtInput =
+  document.getElementById("startedAt");
+
+const generationInfo =
+  document.getElementById("generationInfo");
+
+const createButton =
+  document.getElementById("createButton");
+
+const result =
+  document.getElementById("result");
+
+const batchCodeInput =
+  document.getElementById("batchCode");
+
+const batchNameInput =
+  document.getElementById("batchName");
+
+const batchTypeSelect =
+  document.getElementById("batchType");
+
+const batchCultureSelect =
+  document.getElementById("batchCulture");
+
+const batchQuantityInput =
+  document.getElementById("batchQuantity");
+
+const batchUnitInput =
+  document.getElementById("batchUnit");
+
+const createBatchButton =
+  document.getElementById("createBatchButton");
+
+const batchList =
+  document.getElementById("batchList");
+
+const batchInfo =
+  document.getElementById("batchInfo");
+
+const batchStages =
+  document.getElementById("batchStages");
+
+const batchStageList =
+  document.getElementById("batchStageList");
+
+const advanceBatchButton =
+  document.getElementById("advanceBatchButton");
+
+const reloadBatchButton =
+  document.getElementById("reloadBatchButton");
+
+const batchQc =
+  document.getElementById("batchQc");
+
+const batchQcList =
+  document.getElementById("batchQcList");
+
+const releaseBatchButton =
+  document.getElementById("releaseBatchButton");
+
+
+/* ============================================================
+   OUTILS UI
+   ============================================================ */
+
+function showMessage(
+  text,
+  type = "success"
+) {
+
+  message.innerHTML = "";
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    `card ${type}`;
+
+  div.textContent =
+    text;
+
+  message.appendChild(div);
+}
+
+
+function clearMessage() {
+
+  message.innerHTML = "";
+
+}
+
+
+function showElement(element) {
+
+  element.classList.remove("hidden");
+
+}
+
+
+function hideElement(element) {
+
+  element.classList.add("hidden");
+
+}
+
+
+/* ============================================================
+   SECURITE AFFICHAGE
+   ============================================================ */
+
+function escapeHtml(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+
+  }
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+/* ============================================================
+   AUTHENTIFICATION
+   ============================================================ */
+
+async function getCurrentSession() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.getSession();
+
+  if (error) {
+
+    throw error;
+
+  }
+
+  return data.session;
+
+}
+
+
+/* ============================================================
+   CLAIM BA-LABS
+   ============================================================ */
+
+async function claimBALabs() {
+
+  const session =
+    await getCurrentSession();
+
+
+  if (!session) {
+
+    throw new Error(
+      "Aucune session Supabase active."
+    );
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.functions.invoke(
+      "claim-ba-labs",
+      {
+        body: {}
+      }
+    );
+
+
+  if (error) {
+
+    throw new Error(
+      error.message ||
+      "L'appel à claim-ba-labs a échoué."
+    );
+
+  }
+
+
+  if (!data) {
+
+    throw new Error(
+      "claim-ba-labs n'a retourné aucune donnée."
+    );
+
+  }
+
+
+  if (!data.ok) {
+
+    throw new Error(
+      data.error ||
+      "Le compte n'a pas pu être rattaché à BA-LABS."
+    );
+
+  }
+
+
+  if (
+    !data.organization ||
+    !data.organization.id
+  ) {
+
+    throw new Error(
+      "claim-ba-labs n'a pas retourné l'organisation BA-LABS."
+    );
+
+  }
+
+
+  organization =
+    data.organization;
+
+  organizationId =
+    data.organization.id;
+
+
+  return data;
+
+}
+
+
+/* ============================================================
+   CONNEXION
+   ============================================================ */
+
+async function signIn() {
+
+  clearMessage();
+
+  signInButton.disabled = true;
+  signUpButton.disabled = true;
+
+
+  try {
+
+    const email =
+      authEmail.value.trim();
+
+    const password =
+      authPassword.value;
+
+
+    if (!email) {
+
+      throw new Error(
+        "Entrez une adresse email."
+      );
+
+    }
+
+
+    if (!password) {
+
+      throw new Error(
+        "Entrez le mot de passe."
+      );
+
+    }
+
+
+    const {
+      error
+    } =
+      await supabaseClient.auth.signInWithPassword({
+
+        email,
+        password
+
+      });
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    await refreshAuthUI();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Erreur connexion:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Connexion impossible.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    signInButton.disabled = false;
+    signUpButton.disabled = false;
+
+  }
+
+}
+
+
+/* ============================================================
+   CREATION DE COMPTE
+   ============================================================ */
+
+async function signUp() {
+
+  clearMessage();
+
+  signInButton.disabled = true;
+  signUpButton.disabled = true;
+
+
+  try {
+
+    const email =
+      authEmail.value.trim();
+
+    const password =
+      authPassword.value;
+
+
+    if (!email) {
+
+      throw new Error(
+        "Entrez une adresse email."
+      );
+
+    }
+
+
+    if (!password) {
+
+      throw new Error(
+        "Entrez un mot de passe."
+      );
+
+    }
+
+
+    if (password.length < 6) {
+
+      throw new Error(
+        "Le mot de passe doit comporter au moins 6 caractères."
+      );
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email,
+
+        password,
+
+        options: {
+
+          emailRedirectTo:
+            window.location.href
+
+        }
+
+      });
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    if (
+      data &&
+      data.session
+    ) {
+
+      await refreshAuthUI();
+
+      return;
+
+    }
+
+
+    showMessage(
+      "Compte créé. Vérifiez l'email de confirmation Supabase, puis revenez ici et connectez-vous.",
+      "success"
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Erreur création compte:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Création du compte impossible.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    signInButton.disabled = false;
+    signUpButton.disabled = false;
+
+  }
+
+}
+
+
+/* ============================================================
+   DECONNEXION
+   ============================================================ */
+
+async function signOut() {
+
+  clearMessage();
+
+
+  try {
+
+    await supabaseClient.auth.signOut();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Erreur déconnexion:",
+      error
+    );
+
+  }
+
+
+  organizationId = null;
+  organization = null;
+  strainOptions = [];
+  referenceData = [];
+  cultureOptions = [];
+  latestBatches = [];
+  selectedBatchId = null;
+  selectedBatch = null;
+
+
+  hideElement(trackerCard);
+  hideElement(batchCard);
+  hideElement(resultCard);
+  hideElement(signOutButton);
+
+
+  authStatus.textContent =
+    "Non connecté.";
+
+}
+
+
+/* ============================================================
+   AUTH UI
+   ============================================================ */
+
+async function refreshAuthUI() {
+
+  const session =
+    await getCurrentSession();
+
+
+  if (!session) {
+
+    hideElement(trackerCard);
+    hideElement(batchCard);
+    hideElement(resultCard);
+    hideElement(signOutButton);
+
+    authStatus.textContent =
+      "Non connecté.";
+
+    return;
+
+  }
+
+
+  authStatus.textContent =
+    `Session détectée : ${
+      session.user.email ||
+      session.user.id
+    }`;
+
+
+  showElement(signOutButton);
+
+
+  await initializeAuthenticatedTracker(
+    session
+  );
+
+}
+
+
+/* ============================================================
+   INITIALISATION AUTHENTIFIEE
+   ============================================================ */
+
+async function initializeAuthenticatedTracker(
+  session
+) {
+
+  if (
+    initializationInProgress
+  ) {
+
+    return;
+
+  }
+
+
+  initializationInProgress =
+    true;
+
+
+  try {
+
+    clearMessage();
+
+
+    authStatus.textContent =
+      `Connexion BA-LABS : ${
+        session.user.email ||
+        session.user.id
+      }`;
+
+
+    const claim =
+      await claimBALabs();
+
+
+    if (!organizationId) {
+
+      throw new Error(
+        "L'organisation BA-LABS n'a pas fourni d'identifiant."
+      );
+
+    }
+
+
+    authStatus.textContent =
+      `Connecté : ${
+        session.user.email ||
+        session.user.id
+      } — ${
+        organization.code
+      } — rôle : ${
+        claim.role ||
+        "owner"
+      }`;
+
+
+    await loadStrainOptions();
+
+    await loadReferenceData();
+
+    await loadCultureOptions();
+
+    await loadLatestBatches();
+
+    setDefaultDate();
+
+
+    showElement(trackerCard);
+
+    showElement(batchCard);
+
+
+    showMessage(
+      `BA-LABS chargée — organisation ${organization.code}.`
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Initialisation BA-LABS:",
+      error
+    );
+
+
+    hideElement(trackerCard);
+    hideElement(batchCard);
+
+
+    showMessage(
+      error.message ||
+      "Initialisation impossible.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    initializationInProgress =
+      false;
+
+  }
+
+}
+
+
+/* ============================================================
+   DATE PAR DEFAUT
+   ============================================================ */
+
+function setDefaultDate() {
+
+  const now =
+    new Date();
+
+
+  now.setMinutes(
+    now.getMinutes() -
+    now.getTimezoneOffset()
+  );
+
+
+  startedAtInput.value =
+    now.toISOString()
+      .slice(0, 16);
+
+}
+
+
+/* ============================================================
+   SOUCHES / MATERIAUX
+   ============================================================ */
+
+async function loadStrainOptions() {
+
+  if (!organizationId) {
+
+    throw new Error(
+      "Organisation absente avant chargement des souches."
+    );
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from(
+        "v_culture_creation_options"
+      )
+      .select(`
+        organization_id,
+        material_id,
+        material_code,
+        generation,
+        material_state,
+        strain_id,
+        strain_code,
+        strain_designation,
+        organism_id,
+        scientific_name,
+        common_name
+      `)
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .order(
+        "strain_code"
+      );
+
+
+  if (error) {
+
+    throw new Error(
+      `Chargement des souches impossible : ${error.message}`
+    );
+
+  }
+
+
+  strainOptions =
+    data || [];
+
+
+  strainSelect.innerHTML =
+    "";
+
+
+  const defaultOption =
+    document.createElement(
+      "option"
+    );
+
+
+  defaultOption.value =
+    "";
+
+
+  defaultOption.textContent =
+    strainOptions.length
+      ? "Sélectionner une souche..."
+      : "Aucune souche disponible";
+
+
+  strainSelect.appendChild(
+    defaultOption
+  );
+
+
+  for (
+    const item of strainOptions
+  ) {
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+
+    option.value =
+      item.material_id;
+
+
+    const designation =
+      item.strain_designation ||
+      item.scientific_name ||
+      item.common_name ||
+      "—";
+
+
+    option.textContent =
+      `${item.strain_code} — ${designation} — G${item.generation}`;
+
+
+    strainSelect.appendChild(
+      option
+    );
+
+  }
+
+
+  updateGenerationPreview();
+
+}
+
+
+/* ============================================================
+   REFERENCES CULTURE
+   ============================================================ */
+
+async function loadReferenceData() {
+
+  if (!organizationId) {
+
+    throw new Error(
+      "Organisation absente avant chargement des références."
+    );
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from(
+        "v_culture_creation_reference"
+      )
+      .select("*")
+      .order(
+        "reference_type"
+      )
+      .order(
+        "code"
+      );
+
+
+  if (error) {
+
+    throw new Error(
+      `Chargement des références impossible : ${error.message}`
+    );
+
+  }
+
+
+  referenceData =
+    data || [];
+
+
+  loadCultureTypes();
+
+  loadProtocols();
+
+}
+
+
+/* ============================================================
+   TYPES DE CULTURE
+   ============================================================ */
+
+function loadCultureTypes() {
+
+  cultureTypeSelect.innerHTML =
+    "";
+
+
+  const defaultOption =
+    document.createElement(
+      "option"
+    );
+
+
+  defaultOption.value =
+    "";
+
+
+  defaultOption.textContent =
+    "Sélectionner...";
+
+
+  cultureTypeSelect.appendChild(
+    defaultOption
+  );
+
+
+  const types =
+    referenceData.filter(
+      row =>
+        row.reference_type ===
+          "culture_type" ||
+        row.reference_type ===
+          "culture_types"
+    );
+
+
+  for (
+    const item of types
+  ) {
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+
+    option.value =
+      item.code;
+
+
+    option.textContent =
+      item.label ||
+      item.name ||
+      item.code;
+
+
+    cultureTypeSelect.appendChild(
+      option
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   PROTOCOLES
+   ============================================================ */
+
+function loadProtocols() {
+
+  protocolSelect.innerHTML =
+    "";
+
+
+  const defaultOption =
+    document.createElement(
+      "option"
+    );
+
+
+  defaultOption.value =
+    "";
+
+
+  defaultOption.textContent =
+    "Aucun protocole";
+
+
+  protocolSelect.appendChild(
+    defaultOption
+  );
+
+
+  const protocols =
+    referenceData.filter(
+      row =>
+        row.reference_type ===
+        "protocol"
+    );
+
+
+  for (
+    const item of protocols
+  ) {
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+
+    option.value =
+      item.code;
+
+
+    option.textContent =
+      `${item.code} — ${
+        item.name ||
+        item.label ||
+        ""
+      }`;
+
+
+    protocolSelect.appendChild(
+      option
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   APERCU GENERATION
+   ============================================================ */
+
+function updateGenerationPreview() {
+
+  const materialId =
+    strainSelect.value;
+
+
+  const selected =
+    strainOptions.find(
+      item =>
+        item.material_id ===
+        materialId
+    );
+
+
+  if (!selected) {
+
+    strainInfo.textContent =
+      "Sélectionnez une souche.";
+
+    generationInfo.textContent =
+      "Génération : —";
+
+    return;
+
+  }
+
+
+  strainInfo.innerHTML = `
+
+    <strong>
+      ${escapeHtml(
+        selected.strain_code
+      )}
+    </strong>
+
+    <br>
+
+    Organisme :
+    ${escapeHtml(
+      selected.scientific_name ||
+      selected.common_name ||
+      "—"
+    )}
+
+    <br>
+
+    Désignation :
+    ${escapeHtml(
+      selected.strain_designation ||
+      "—"
+    )}
+
+    <br>
+
+    Matériel parent :
+    <code>
+      ${escapeHtml(
+        selected.material_code
+      )}
+    </code>
+
+    <br>
+
+    Génération actuelle :
+    <strong>
+      G${escapeHtml(
+        selected.generation
+      )}
+    </strong>
+
+  `;
+
+
+  const nextGeneration =
+    Number(
+      selected.generation
+    ) + 1;
+
+
+  generationInfo.innerHTML = `
+
+    Matériel parent :
+    <code>
+      ${escapeHtml(
+        selected.material_code
+      )}
+    </code>
+
+    →
+
+    nouvelle culture :
+
+    <strong>
+      G${escapeHtml(
+        nextGeneration
+      )}
+    </strong>
+
+  `;
+
+}
+
+
+/* ============================================================
+   PROTOCOLE → VERSION
+   ============================================================ */
+
+async function getProtocolVersionId(
+  protocolCode
+) {
+
+  if (!protocolCode) {
+
+    return null;
+
+  }
+
+
+  const {
+    data: protocol,
+    error: protocolError
+  } =
+    await supabaseClient
+      .from("protocols")
+      .select("id")
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .eq(
+        "code",
+        protocolCode
+      )
+      .maybeSingle();
+
+
+  if (protocolError) {
+
+    throw new Error(
+      `Erreur protocole : ${protocolError.message}`
+    );
+
+  }
+
+
+  if (!protocol) {
+
+    return null;
+
+  }
+
+
+  const {
+    data: versions,
+    error: versionError
+  } =
+    await supabaseClient
+      .from("protocol_versions")
+      .select(
+        "id, version, created_at"
+      )
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .eq(
+        "protocol_id",
+        protocol.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1);
+
+
+  if (versionError) {
+
+    throw new Error(
+      `Erreur version protocole : ${versionError.message}`
+    );
+
+  }
+
+
+  if (
+    !versions ||
+    versions.length === 0
+  ) {
+
+    return null;
+
+  }
+
+
+  return versions[0].id;
+
+}
+
+
+/* ============================================================
+   CREATION CULTURE
+   ============================================================ */
+
+async function createCulture() {
+
+  clearMessage();
+
+
+  const materialId =
+    strainSelect.value;
+
+  const cultureCode =
+    cultureCodeInput.value.trim();
+
+  const cultureType =
+    cultureTypeSelect.value;
+
+  const protocolCode =
+    protocolSelect.value;
+
+  const startedAt =
+    startedAtInput.value;
+
+
+  if (!organizationId) {
+
+    showMessage(
+      "Organisation BA-LABS absente. Rechargez la page et reconnectez-vous.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!materialId) {
+
+    showMessage(
+      "Sélectionnez une souche.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!cultureCode) {
+
+    showMessage(
+      "Entrez un code de culture.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!cultureType) {
+
+    showMessage(
+      "Sélectionnez un type de culture.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const session =
+    await getCurrentSession();
+
+
+  if (!session) {
+
+    showMessage(
+      "Votre session a expiré. Reconnectez-vous.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  createButton.disabled =
+    true;
+
+  createButton.textContent =
+    "Création...";
+
+
+  try {
+
+    const protocolVersionId =
+      await getProtocolVersionId(
+        protocolCode
+      );
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc(
+        "create_culture_with_generation",
+        {
+
+          p_organization_id:
+            organizationId,
+
+          p_code:
+            cultureCode,
+
+          p_culture_type:
+            cultureType,
+
+          p_parent_material_id:
+            materialId,
+
+          p_parent_culture_id:
+            null,
+
+          p_protocol_version_id:
+            protocolVersionId,
+
+          p_environment_id:
+            null,
+
+          p_experiment_id:
+            null,
+
+          p_experimental_unit_id:
+            null,
+
+          p_started_at:
+            startedAt
+              ? new Date(
+                  startedAt
+                ).toISOString()
+              : null,
+
+          p_metadata: {
+
+            source:
+              "BA Labs Culture Tracker",
+
+            interface_version:
+              "2.0"
+
+          }
+
+        }
+      );
+
+
+    if (error) {
+
+      throw new Error(
+        error.message
+      );
+
+    }
+
+
+    const created =
+      data || {};
+
+
+    showElement(
+      resultCard
+    );
+
+
+    result.className =
+      "info success";
+
+
+    result.innerHTML = `
+
+      <strong>
+        Culture créée avec succès.
+      </strong>
+
+      <br><br>
+
+      Culture :
+      <code>
+        ${escapeHtml(
+          created.culture_code ||
+          cultureCode
+        )}
+      </code>
+
+      <br>
+
+      Matériel dérivé :
+      <code>
+        ${escapeHtml(
+          created.material_code ||
+          "—"
+        )}
+      </code>
+
+      <br>
+
+      Génération :
+      <strong>
+        G${escapeHtml(
+          created.generation ??
+          "—"
+        )}
+      </strong>
+
+      <br>
+
+      ID culture :
+      <code>
+        ${escapeHtml(
+          created.culture_id ||
+          "—"
+        )}
+      </code>
+
+      <br>
+
+      ID matériel :
+      <code>
+        ${escapeHtml(
+          created.material_id ||
+          "—"
+        )}
+      </code>
+
+    `;
+
+
+    showMessage(
+      "Culture créée dans Supabase."
+    );
+
+
+    cultureCodeInput.value =
+      "";
+
+
+    await loadStrainOptions();
+
+    await loadCultureOptions();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Création culture:",
+      error
+    );
+
+
+    showElement(
+      resultCard
+    );
+
+
+    result.className =
+      "info error";
+
+
+    result.innerHTML = `
+
+      <strong>
+        Création impossible
+      </strong>
+
+      <br><br>
+
+      ${escapeHtml(
+        error.message ||
+        String(error)
+      )}
+
+    `;
+
+
+    showMessage(
+      error.message ||
+      "La création de la culture a échoué.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    createButton.disabled =
+      false;
+
+    createButton.textContent =
+      "Créer la culture";
+
+  }
+
+}
+
+
+/* ============================================================
+   CULTURES DISPONIBLES POUR LES BATCHS
+   ============================================================ */
+
+async function loadCultureOptions() {
+
+  if (!organizationId) {
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("cultures")
+      .select(`
+        id,
+        code,
+        culture_type,
+        material_id,
+        started_at
+      `)
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(100);
+
+
+  if (error) {
+
+    throw new Error(
+      `Chargement des cultures impossible : ${error.message}`
+    );
+
+  }
+
+
+  cultureOptions =
+    data || [];
+
+
+  batchCultureSelect.innerHTML =
+    "";
+
+
+  const defaultOption =
+    document.createElement(
+      "option"
+    );
+
+
+  defaultOption.value =
+    "";
+
+
+  defaultOption.textContent =
+    cultureOptions.length
+      ? "Sélectionner une culture..."
+      : "Aucune culture disponible";
+
+
+  batchCultureSelect.appendChild(
+    defaultOption
+  );
+
+
+  for (
+    const culture of cultureOptions
+  ) {
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+
+    option.value =
+      culture.id;
+
+
+    option.textContent =
+      `${culture.code} — ${
+        culture.culture_type ||
+        "culture"
+      }`;
+
+
+    batchCultureSelect.appendChild(
+      option
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   BATCHS EXISTANTS
+   ============================================================ */
+
+async function loadLatestBatches() {
+
+  if (!organizationId) {
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("batches")
+      .select(`
+        id,
+        batch_code,
+        name,
+        batch_type,
+        status,
+        current_stage,
+        culture_id,
+        material_id,
+        planned_at,
+        quantity_planned,
+        quantity_actual,
+        quantity_unit_code,
+        created_at
+      `)
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(30);
+
+
+  if (error) {
+
+    throw new Error(
+      `Chargement des batchs impossible : ${error.message}`
+    );
+
+  }
+
+
+  latestBatches =
+    data || [];
+
+
+  renderBatchList();
+
+}
+
+
+/* ============================================================
+   LISTE BATCHS
+   ============================================================ */
+
+function renderBatchList() {
+
+  batchList.innerHTML =
+    "";
+
+
+  if (
+    latestBatches.length === 0
+  ) {
+
+    batchList.innerHTML = `
+
+      <div class="info muted">
+        Aucun batch créé pour le moment.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  for (
+    const batch of latestBatches
+  ) {
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+
+    button.type =
+      "button";
+
+    button.className =
+      "batch-item";
+
+
+    button.innerHTML = `
+
+      <strong>
+        ${escapeHtml(
+          batch.batch_code
+        )}
+      </strong>
+
+      <br>
+
+      <span class="muted">
+        ${escapeHtml(
+          batch.name ||
+          "Sans nom"
+        )}
+        —
+        ${escapeHtml(
+          batch.batch_type ||
+          "—"
+        )}
+        —
+        ${escapeHtml(
+          batch.current_stage ||
+          "—"
+        )}
+        —
+        ${escapeHtml(
+          batch.status ||
+          "—"
+        )}
+      </span>
+
+    `;
+
+
+    button.addEventListener(
+      "click",
+      () =>
+        loadBatch(
+          batch.id
+        )
+    );
+
+
+    batchList.appendChild(
+      button
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   CHARGEMENT D'UN BATCH
+   ============================================================ */
+
+async function loadBatch(
+  batchId
+) {
+
+  if (!organizationId) {
+
+    return;
+
+  }
+
+
+  selectedBatchId =
+    batchId;
+
+
+  clearMessage();
+
+
+  const {
+    data: batch,
+    error: batchError
+  } =
+    await supabaseClient
+      .from("batches")
+      .select(`
+        id,
+        organization_id,
+        batch_code,
+        name,
+        batch_type,
+        status,
+        current_stage,
+        material_id,
+        culture_id,
+        protocol_version_id,
+        location_id,
+        environment_id,
+        planned_at,
+        started_at,
+        completed_at,
+        quantity_planned,
+        quantity_actual,
+        quantity_unit_code,
+        metadata,
+        created_at
+      `)
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .eq(
+        "id",
+        batchId
+      )
+      .single();
+
+
+  if (batchError) {
+
+    showMessage(
+      `Chargement du batch impossible : ${batchError.message}`,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  selectedBatch =
+    batch;
+
+
+  const {
+    data: stages,
+    error: stagesError
+  } =
+    await supabaseClient
+      .from("batch_stages")
+      .select(`
+        id,
+        batch_id,
+        stage_code,
+        sequence_no,
+        status,
+        planned_start_at,
+        started_at,
+        completed_at,
+        notes,
+        metadata
+      `)
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .eq(
+        "batch_id",
+        batchId
+      )
+      .order(
+        "sequence_no"
+      );
+
+
+  if (stagesError) {
+
+    showMessage(
+      `Chargement des étapes impossible : ${stagesError.message}`,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const {
+    data: qcChecks,
+    error: qcError
+  } =
+    await supabaseClient
+      .from("batch_qc_checks")
+      .select(`
+        id,
+        batch_id,
+        check_code,
+        label,
+        status,
+        value_text,
+        measured_value,
+        unit_code,
+        notes,
+        checked_at,
+        checked_by
+      `)
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .eq(
+        "batch_id",
+        batchId
+      )
+      .order(
+        "check_code"
+      );
+
+
+  if (qcError) {
+
+    showMessage(
+      `Chargement du QC impossible : ${qcError.message}`,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  renderBatchInfo(
+    batch
+  );
+
+  renderBatchStages(
+    stages || []
+  );
+
+  renderBatchQc(
+    qcChecks || []
+  );
+
+
+  showElement(
+    batchInfo
+  );
+
+  showElement(
+    batchStages
+  );
+
+  showElement(
+    batchQc
+  );
+
+
+  updateBatchActionState(
+    batch,
+    stages || [],
+    qcChecks || []
+  );
+
+}
+
+
+/* ============================================================
+   INFORMATIONS BATCH
+   ============================================================ */
+
+function renderBatchInfo(
+  batch
+) {
+
+  const plannedQuantity =
+    batch.quantity_planned === null ||
+    batch.quantity_planned === undefined
+      ? "—"
+      : `${batch.quantity_planned} ${
+          batch.quantity_unit_code ||
+          ""
+        }`;
+
+
+  const actualQuantity =
+    batch.quantity_actual === null ||
+    batch.quantity_actual === undefined
+      ? "—"
+      : `${batch.quantity_actual} ${
+          batch.quantity_unit_code ||
+          ""
+        }`;
+
+
+  batchInfo.className =
+    "info";
+
+
+  batchInfo.innerHTML = `
+
+    <strong>
+      ${escapeHtml(
+        batch.batch_code
+      )}
+    </strong>
+
+    <div class="batch-grid">
+
+      <div class="batch-stat">
+
+        <div class="batch-stat-label">
+          Nom
+        </div>
+
+        <div class="batch-stat-value">
+          ${escapeHtml(
+            batch.name ||
+            "—"
+          )}
+        </div>
+
+      </div>
+
+
+      <div class="batch-stat">
+
+        <div class="batch-stat-label">
+          Type
+        </div>
+
+        <div class="batch-stat-value">
+          ${escapeHtml(
+            batch.batch_type ||
+            "—"
+          )}
+        </div>
+
+      </div>
+
+
+      <div class="batch-stat">
+
+        <div class="batch-stat-label">
+          Statut
+        </div>
+
+        <div class="batch-stat-value">
+          ${escapeHtml(
+            batch.status ||
+            "—"
+          )}
+        </div>
+
+      </div>
+
+
+      <div class="batch-stat">
+
+        <div class="batch-stat-label">
+          Étape actuelle
+        </div>
+
+        <div class="batch-stat-value">
+          ${escapeHtml(
+            BATCH_STAGE_LABELS[
+              batch.current_stage
+            ] ||
+            batch.current_stage ||
+            "—"
+          )}
+        </div>
+
+      </div>
+
+
+      <div class="batch-stat">
+
+        <div class="batch-stat-label">
+          Quantité prévue
+        </div>
+
+        <div class="batch-stat-value">
+          ${escapeHtml(
+            plannedQuantity
+          )}
+        </div>
+
+      </div>
+
+
+      <div class="batch-stat">
+
+        <div class="batch-stat-label">
+          Quantité réelle
+        </div>
+
+        <div class="batch-stat-value">
+          ${escapeHtml(
+            actualQuantity
+          )}
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ============================================================
+   ETAPES BATCH
+   ============================================================ */
+
+function renderBatchStages(
+  stages
+) {
+
+  batchStageList.innerHTML =
+    "";
+
+
+  const stageMap =
+    new Map(
+      stages.map(
+        stage =>
+          [
+            stage.stage_code,
+            stage
+          ]
+      )
+    );
+
+
+  for (
+    let index = 0;
+    index < BATCH_STAGES.length;
+    index++
+  ) {
+
+    const stageCode =
+      BATCH_STAGES[index];
+
+
+    const stage =
+      stageMap.get(
+        stageCode
+      );
+
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+
+    const status =
+      stage
+        ? stage.status
+        : "pending";
+
+
+    div.className =
+      `stage ${
+        status === "active"
+          ? "active"
+          : status === "completed"
+            ? "completed"
+            : status === "failed"
+              ? "failed"
+              : ""
+      }`;
+
+
+    const statusClass =
+      status === "active"
+        ? "status-active"
+        : status === "completed"
+          ? "status-completed"
+          : status === "failed"
+            ? "status-failed"
+            : "status-pending";
+
+
+    div.innerHTML = `
+
+      <div class="stage-number">
+        ${index + 1}
+      </div>
+
+      <div>
+
+        <div class="stage-name">
+          ${escapeHtml(
+            BATCH_STAGE_LABELS[
+              stageCode
+            ] ||
+            stageCode
+          )}
+        </div>
+
+        <div class="muted">
+          ${escapeHtml(
+            stageCode
+          )}
+        </div>
+
+      </div>
+
+      <div class="stage-status ${statusClass}">
+        ${escapeHtml(
+          status
+        )}
+      </div>
+
+    `;
+
+
+    batchStageList.appendChild(
+      div
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   QC
+   ============================================================ */
+
+function renderBatchQc(
+  qcChecks
+) {
+
+  batchQcList.innerHTML =
+    "";
+
+
+  if (
+    qcChecks.length === 0
+  ) {
+
+    batchQcList.innerHTML = `
+
+      <div class="info warning">
+        Aucun contrôle QC n'a été généré pour ce batch.
+        La libération sera donc refusée par Supabase.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  for (
+    const check of qcChecks
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "qc-row";
+
+
+    const status =
+      check.status ||
+      "pending";
+
+
+    row.innerHTML = `
+
+      <div>
+
+        <div class="qc-label">
+          ${escapeHtml(
+            check.label ||
+            check.check_code
+          )}
+        </div>
+
+        <span class="qc-code">
+          ${escapeHtml(
+            check.check_code
+          )}
+        </span>
+
+      </div>
+
+
+      <select
+        data-qc-status="${escapeHtml(
+          check.id
+        )}"
+      >
+
+        <option
+          value="pending"
+          ${status === "pending" ? "selected" : ""}
+        >
+          En attente
+        </option>
+
+        <option
+          value="pass"
+          ${status === "pass" ? "selected" : ""}
+        >
+          Conforme
+        </option>
+
+        <option
+          value="fail"
+          ${status === "fail" ? "selected" : ""}
+        >
+          Échec
+        </option>
+
+        <option
+          value="waived"
+          ${status === "waived" ? "selected" : ""}
+        >
+          Dérogation
+        </option>
+
+      </select>
+
+
+      <button
+        type="button"
+        class="small-button qc-save"
+        data-qc-save="${escapeHtml(
+          check.id
+        )}"
+      >
+        Enregistrer
+      </button>
+
+    `;
+
+
+    batchQcList.appendChild(
+      row
+    );
+
+  }
+
+
+  const saveButtons =
+    batchQcList.querySelectorAll(
+      "[data-qc-save]"
+    );
+
+
+  for (
+    const button of saveButtons
+  ) {
+
+    button.addEventListener(
+      "click",
+      () =>
+        saveQcCheck(
+          button.dataset.qcSave
+        )
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   ENREGISTREMENT QC
+   ============================================================ */
+
+async function saveQcCheck(
+  checkId
+) {
+
+  if (!organizationId) {
+
+    return;
+
+  }
+
+
+  const select =
+    batchQcList.querySelector(
+      `[data-qc-status="${CSS.escape(checkId)}"]`
+    );
+
+
+  if (!select) {
+
+    return;
+
+  }
+
+
+  const newStatus =
+    select.value;
+
+
+  const {
+    data: sessionData
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (!sessionData.session) {
+
+    showMessage(
+      "Votre session a expiré.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const update = {
+
+    status:
+      newStatus,
+
+    checked_at:
+      newStatus === "pending"
+        ? null
+        : new Date().toISOString(),
+
+    checked_by:
+      newStatus === "pending"
+        ? null
+        : sessionData.session.user.id
+
+  };
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("batch_qc_checks")
+      .update(update)
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .eq(
+        "id",
+        checkId
+      );
+
+
+  if (error) {
+
+    showMessage(
+      `Enregistrement QC impossible : ${error.message}`,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "Contrôle qualité enregistré."
+  );
+
+
+  await loadBatch(
+    selectedBatchId
+  );
+
+}
+
+
+/* ============================================================
+   ETAT DES ACTIONS BATCH
+   ============================================================ */
+
+function updateBatchActionState(
+  batch,
+  stages,
+  qcChecks
+) {
+
+  const currentStage =
+    batch.current_stage;
+
+
+  const currentStageData =
+    stages.find(
+      stage =>
+        stage.stage_code ===
+        currentStage
+    );
+
+
+  const currentStatus =
+    currentStageData
+      ? currentStageData.status
+      : null;
+
+
+  /*
+   * La fonction SQL accepte l'avancement
+   * même si la première étape est encore
+   * marquée pending.
+   *
+   * On expose donc l'action pour tout batch
+   * non libéré et non déjà au QC.
+   */
+
+  const canAdvance =
+    batch.status !== "released" &&
+    currentStage !== "qc" &&
+    currentStage !== "release";
+
+
+  advanceBatchButton.disabled =
+    !canAdvance;
+
+
+  if (currentStage === "qc") {
+
+    advanceBatchButton.textContent =
+      "QC : utiliser la libération";
+
+  }
+
+  else if (
+    currentStage === "release"
+  ) {
+
+    advanceBatchButton.textContent =
+      "Batch terminé";
+
+  }
+
+  else {
+
+    advanceBatchButton.textContent =
+      currentStatus === "pending"
+        ? "Démarrer / passer à l'étape suivante"
+        : "Passer à l'étape suivante";
+
+  }
+
+
+  const qcComplete =
+    qcChecks.length > 0 &&
+    qcChecks.every(
+      check =>
+        check.status === "pass" ||
+        check.status === "waived"
+    );
+
+
+  releaseBatchButton.disabled =
+    batch.current_stage !== "qc" ||
+    !qcComplete ||
+    batch.status === "released";
+
+
+  if (
+    batch.current_stage === "qc"
+  ) {
+
+    showElement(
+      releaseBatchButton
+    );
+
+  }
+
+  else {
+
+    hideElement(
+      releaseBatchButton
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   CREATION BATCH
+   ============================================================ */
+
+async function createBatch() {
+
+  clearMessage();
+
+
+  if (!organizationId) {
+
+    showMessage(
+      "Organisation BA-LABS absente.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const batchCode =
+    batchCodeInput.value.trim();
+
+  const batchName =
+    batchNameInput.value.trim();
+
+  const batchType =
+    batchTypeSelect.value;
+
+  const cultureId =
+    batchCultureSelect.value;
+
+  const quantityRaw =
+    batchQuantityInput.value;
+
+  const quantityUnit =
+    batchUnitInput.value.trim();
+
+
+  if (!batchCode) {
+
+    showMessage(
+      "Entrez un code de batch.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!batchName) {
+
+    showMessage(
+      "Entrez un nom de batch.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!batchType) {
+
+    showMessage(
+      "Sélectionnez un type de batch.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (!cultureId) {
+
+    showMessage(
+      "Sélectionnez une culture source.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  let selectedCulture =
+    cultureOptions.find(
+      culture =>
+        culture.id ===
+        cultureId
+    );
+
+
+  if (!selectedCulture) {
+
+    throw new Error(
+      "La culture sélectionnée n'est plus disponible."
+    );
+
+  }
+
+
+  const quantityPlanned =
+    quantityRaw === ""
+      ? null
+      : Number(quantityRaw);
+
+
+  if (
+    quantityPlanned !== null &&
+    (
+      !Number.isFinite(
+        quantityPlanned
+      ) ||
+      quantityPlanned < 0
+    )
+  ) {
+
+    showMessage(
+      "La quantité prévue est invalide.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const protocolVersionId =
+    await getCultureProtocolVersionId(
+      selectedCulture.id
+    );
+
+
+  const selectedMaterialId =
+    selectedCulture.material_id;
+
+
+  createBatchButton.disabled =
+    true;
+
+  createBatchButton.textContent =
+    "Création...";
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc(
+        "create_batch_with_stages",
+        {
+
+          p_organization_id:
+            organizationId,
+
+          p_batch_code:
+            batchCode,
+
+          p_name:
+            batchName,
+
+          p_batch_type:
+            batchType,
+
+          p_protocol_version_id:
+            protocolVersionId,
+
+          p_material_id:
+            selectedMaterialId,
+
+          p_culture_id:
+            cultureId,
+
+          p_location_id:
+            null,
+
+          p_environment_id:
+            null,
+
+          p_planned_at:
+            new Date().toISOString(),
+
+          p_quantity_planned:
+            quantityPlanned,
+
+          p_quantity_unit_code:
+            quantityUnit ||
+            null,
+
+          p_stages:
+            BATCH_STAGES
+
+        }
+      );
+
+
+    if (error) {
+
+      throw new Error(
+        error.message
+      );
+
+    }
+
+
+    const createdBatch =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+
+    batchCodeInput.value =
+      "";
+
+    batchNameInput.value =
+      "";
+
+    batchQuantityInput.value =
+      "";
+
+    batchUnitInput.value =
+      "";
+
+
+    showElement(
+      resultCard
+    );
+
+
+    result.className =
+      "info success";
+
+
+    result.innerHTML = `
+
+      <strong>
+        Batch créé avec succès.
+      </strong>
+
+      <br><br>
+
+      Batch :
+      <code>
+        ${escapeHtml(
+          createdBatch?.batch_code ||
+          batchCode
+        )}
+      </code>
+
+      <br>
+
+      ID :
+      <code>
+        ${escapeHtml(
+          createdBatch?.id ||
+          "—"
+        )}
+      </code>
+
+      <br>
+
+      Première étape :
+      <strong>
+        Préparation
+      </strong>
+
+    `;
+
+
+    showMessage(
+      "Batch créé dans Supabase."
+    );
+
+
+    await loadLatestBatches();
+
+
+    if (
+      createdBatch &&
+      createdBatch.id
+    ) {
+
+      await loadBatch(
+        createdBatch.id
+      );
+
+    }
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Création batch:",
+      error
+    );
+
+
+    showMessage(
+      error.message ||
+      "La création du batch a échoué.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    createBatchButton.disabled =
+      false;
+
+    createBatchButton.textContent =
+      "Créer le batch";
+
+  }
+
+}
+
+
+/* ============================================================
+   PROTOCOLE D'UNE CULTURE
+   ============================================================ */
+
+async function getCultureProtocolVersionId(
+  cultureId
+) {
+
+  const {
+    data: culture,
+    error: cultureError
+  } =
+    await supabaseClient
+      .from("cultures")
+      .select(
+        "protocol_version_id"
+      )
+      .eq(
+        "organization_id",
+        organizationId
+      )
+      .eq(
+        "id",
+        cultureId
+      )
+      .single();
+
+
+  if (cultureError) {
+
+    throw new Error(
+      `Impossible de récupérer le protocole de la culture : ${cultureError.message}`
+    );
+
+  }
+
+
+  return culture.protocol_version_id ||
+    null;
+
+}
+
+
+/* ============================================================
+   AVANCEMENT D'UNE ETAPE
+   ============================================================ */
+
+async function advanceBatch() {
+
+  if (
+    !selectedBatchId ||
+    !selectedBatch
+  ) {
+
+    showMessage(
+      "Sélectionnez d'abord un batch.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const expectedStage =
+    selectedBatch.current_stage;
+
+
+  if (
+    !expectedStage ||
+    expectedStage === "qc" ||
+    expectedStage === "release"
+  ) {
+
+    showMessage(
+      "Cette étape ne peut pas être avancée avec cette action.",
+      "warning"
+    );
+
+    return;
+
+  }
+
+
+  advanceBatchButton.disabled =
+    true;
+
+  advanceBatchButton.textContent =
+    "Avancement...";
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc(
+        "advance_batch_stage",
+        {
+
+          p_batch_id:
+            selectedBatchId,
+
+          p_expected_stage:
+            expectedStage
+
+        }
+      );
+
+
+    if (error) {
+
+      throw new Error(
+        error.message
+      );
+
+    }
+
+
+    const advanced =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+
+    showMessage(
+      `Batch avancé : ${
+        BATCH_STAGE_LABELS[
+          advanced?.current_stage
+        ] ||
+        advanced?.current_stage ||
+        "étape suivante"
+      }.`
+    );
+
+
+    await loadLatestBatches();
+
+    await loadBatch(
+      selectedBatchId
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Avancement batch:",
+      error
+    );
+
+
+    showMessage(
+      error.message ||
+      "Impossible d'avancer le batch.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    advanceBatchButton.disabled =
+      false;
+
+  }
+
+}
+
+
+/* ============================================================
+   LIBERATION DU BATCH
+   ============================================================ */
+
+async function releaseBatch() {
+
+  if (!selectedBatchId) {
+
+    showMessage(
+      "Sélectionnez d'abord un batch.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  releaseBatchButton.disabled =
+    true;
+
+  releaseBatchButton.textContent =
+    "Vérification QC...";
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc(
+        "release_batch",
+        {
+
+          p_batch_id:
+            selectedBatchId
+
+        }
+      );
+
+
+    if (error) {
+
+      throw new Error(
+        error.message
+      );
+
+    }
+
+
+    const released =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+
+    showMessage(
+      `Batch ${released?.batch_code || ""} libéré avec succès.`
+    );
+
+
+    await loadLatestBatches();
+
+    await loadBatch(
+      selectedBatchId
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Libération batch:",
+      error
+    );
+
+
+    showMessage(
+      error.message ||
+      "Le batch ne peut pas être libéré.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    releaseBatchButton.disabled =
+      false;
+
+    releaseBatchButton.textContent =
+      "Libérer le batch";
+
+  }
+
+}
+
+
+/* ============================================================
+   EVENEMENTS
+   ============================================================ */
+
+strainSelect.addEventListener(
+  "change",
+  updateGenerationPreview
+);
+
+
+createButton.addEventListener(
+  "click",
+  createCulture
+);
+
+
+createBatchButton.addEventListener(
+  "click",
+  createBatch
+);
+
+
+advanceBatchButton.addEventListener(
+  "click",
+  advanceBatch
+);
+
+
+releaseBatchButton.addEventListener(
+  "click",
+  releaseBatch
+);
+
+
+reloadBatchButton.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      await loadLatestBatches();
+
+      if (
+        selectedBatchId
+      ) {
+
+        await loadBatch(
+          selectedBatchId
+        );
+
+      }
+
+    }
+
+    catch (error) {
+
+      showMessage(
+        error.message ||
+        "Actualisation impossible.",
+        "error"
+      );
+
+    }
+
+  }
+);
+
+
+signInButton.addEventListener(
+  "click",
+  signIn
+);
+
+
+signUpButton.addEventListener(
+  "click",
+  signUp
+);
+
+
+signOutButton.addEventListener(
+  "click",
+  signOut
+);
+
+
+/* ============================================================
+   CHANGEMENT DE SESSION
+   ============================================================ */
+
+supabaseClient.auth.onAuthStateChange(
+  (
+    event,
+    session
+  ) => {
+
+    setTimeout(
+      () => {
+
+        refreshAuthUI()
+          .catch(
+            error => {
+
+              console.error(
+                "Auth state:",
+                error
+              );
+
+            }
+          );
+
+      },
+      0
+    );
+
+  }
+);
+
+
+/* ============================================================
+   DEMARRAGE
+   ============================================================ */
+
+async function init() {
+
+  try {
+
+    const session =
+      await getCurrentSession();
+
+
+    if (!session) {
+
+      authStatus.textContent =
+        "Non connecté.";
+
+      hideElement(
+        trackerCard
+      );
+
+      hideElement(
+        batchCard
+      );
+
+      return;
+
+    }
+
+
+    await refreshAuthUI();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Initialisation:",
+      error
+    );
+
+
+    showMessage(
+      error.message ||
+      "Initialisation impossible.",
+      "error"
+    );
+
+  }
+
+}
+
+
+init();
+
+</script>
+
+</body>
+</html>
+```
