@@ -1,10 +1,11 @@
+```html
 <!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>BA Labs — Culture Tracker</title>
+  <title>BA Labs — Culture & Batch Tracker</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -34,7 +35,7 @@
 
     .container {
       width: 100%;
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
@@ -50,6 +51,11 @@
     h2 {
       margin: 0 0 14px;
       font-size: 20px;
+    }
+
+    h3 {
+      margin: 24px 0 12px;
+      font-size: 17px;
     }
 
     .subtitle {
@@ -107,6 +113,22 @@
       cursor: not-allowed;
     }
 
+    .secondary-button {
+      background: #66716a;
+    }
+
+    .secondary-button:hover {
+      background: #4e5852;
+    }
+
+    .danger-button {
+      background: #8a2020;
+    }
+
+    .danger-button:hover {
+      background: #6f1717;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -139,6 +161,12 @@
       color: #8a2020;
     }
 
+    .warning {
+      background: #fff8e8;
+      border: 1px solid #ead7a0;
+      color: #765b12;
+    }
+
     .muted {
       color: #69736b;
       font-size: 14px;
@@ -155,9 +183,187 @@
       display: none !important;
     }
 
+    .batch-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .batch-stat {
+      background: #f5f7f5;
+      border-radius: 9px;
+      padding: 12px;
+    }
+
+    .batch-stat-label {
+      color: #69736b;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .batch-stat-value {
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .stage-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 11px 12px;
+      border: 1px solid #dfe5df;
+      border-radius: 9px;
+      background: #fafbfa;
+    }
+
+    .stage-number {
+      font-weight: 700;
+      color: #69736b;
+    }
+
+    .stage-name {
+      font-weight: 600;
+    }
+
+    .stage-status {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .stage.active {
+      border-color: #8ab596;
+      background: #f0f8f1;
+    }
+
+    .stage.completed {
+      background: #f3f7f3;
+    }
+
+    .stage.failed {
+      border-color: #d99a9a;
+      background: #fff2f2;
+    }
+
+    .status-pending {
+      color: #69736b;
+    }
+
+    .status-active {
+      color: #1d5a29;
+    }
+
+    .status-completed {
+      color: #315d3a;
+    }
+
+    .status-failed {
+      color: #8a2020;
+    }
+
+    .qc-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .qc-row {
+      display: grid;
+      grid-template-columns: 1fr 130px 120px;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #dfe5df;
+      border-radius: 9px;
+      background: #fafbfa;
+    }
+
+    .qc-label {
+      font-weight: 600;
+    }
+
+    .qc-code {
+      display: block;
+      margin-top: 3px;
+      color: #69736b;
+      font-size: 12px;
+    }
+
+    .qc-row input,
+    .qc-row select {
+      margin: 0;
+      width: 100%;
+    }
+
+    .qc-save {
+      margin: 0;
+      padding: 9px 10px;
+      font-size: 13px;
+    }
+
+    .batch-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .batch-actions button {
+      margin-top: 0;
+    }
+
+    .batch-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .batch-item {
+      width: 100%;
+      margin: 0;
+      text-align: left;
+      background: #f5f7f5;
+      color: #172018;
+      border: 1px solid #dfe5df;
+      font-weight: 600;
+    }
+
+    .batch-item:hover {
+      background: #edf1ed;
+    }
+
+    .small-button {
+      width: auto;
+      padding: 8px 11px;
+      margin: 0;
+      font-size: 13px;
+    }
+
     @media (max-width: 700px) {
       .grid,
-      .auth-actions {
+      .auth-actions,
+      .batch-grid,
+      .batch-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .stage {
+        grid-template-columns: 34px 1fr;
+      }
+
+      .stage-status {
+        grid-column: 2;
+      }
+
+      .qc-row {
         grid-template-columns: 1fr;
       }
 
@@ -173,10 +379,11 @@
 <div class="container">
 
   <header>
-    <h1>BA Labs — Culture Tracker</h1>
+    <h1>BA Labs — Culture & Batch Tracker</h1>
 
     <div class="subtitle">
-      Gestion des cultures, générations et matériels biologiques.
+      Gestion des cultures, générations, lots biologiques,
+      étapes de production et contrôle qualité.
     </div>
   </header>
 
@@ -261,7 +468,7 @@
 
 
   <!-- ======================================================
-       TRACKER
+       CULTURE TRACKER
        ====================================================== -->
 
   <section
@@ -270,9 +477,6 @@
   >
 
     <h2>Nouvelle culture</h2>
-
-
-    <!-- SOUCHE -->
 
     <label for="strain">
       Souche / ressource biologique
@@ -295,8 +499,6 @@
     </div>
 
 
-    <!-- CODE CULTURE -->
-
     <label for="cultureCode">
       Code de culture
     </label>
@@ -309,8 +511,6 @@
 
 
     <div class="grid">
-
-      <!-- TYPE DE CULTURE -->
 
       <div>
 
@@ -328,8 +528,6 @@
 
       </div>
 
-
-      <!-- PROTOCOLE -->
 
       <div>
 
@@ -350,8 +548,6 @@
     </div>
 
 
-    <!-- DATE -->
-
     <label for="startedAt">
       Date de démarrage
     </label>
@@ -361,8 +557,6 @@
       type="datetime-local"
     >
 
-
-    <!-- GENERATION -->
 
     <div
       id="generationInfo"
@@ -383,6 +577,254 @@
 
 
   <!-- ======================================================
+       BATCH TRACKER
+       ====================================================== -->
+
+  <section
+    class="card hidden"
+    id="batchCard"
+  >
+
+    <h2>Batch Tracker</h2>
+
+    <div class="muted">
+      Création et suivi du cycle complet :
+      préparation → stérilisation → inoculation →
+      incubation → cultivation → récolte →
+      formulation → packaging → QC → libération.
+    </div>
+
+
+    <h3>Nouveau batch</h3>
+
+
+    <div class="grid">
+
+      <div>
+
+        <label for="batchCode">
+          Code du batch
+        </label>
+
+        <input
+          id="batchCode"
+          type="text"
+          placeholder="Ex. BATCH-PO-P80-001"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="batchName">
+          Nom du batch
+        </label>
+
+        <input
+          id="batchName"
+          type="text"
+          placeholder="Ex. Grain P80 G1"
+        >
+
+      </div>
+
+    </div>
+
+
+    <div class="grid">
+
+      <div>
+
+        <label for="batchType">
+          Type de batch
+        </label>
+
+        <select id="batchType">
+
+          <option value="Biologique">
+            Biologique
+          </option>
+
+          <option value="Milieu">
+            Milieu
+          </option>
+
+          <option value="Substrat">
+            Substrat
+          </option>
+
+          <option value="Grain">
+            Grain
+          </option>
+
+          <option value="SMS">
+            SMS
+          </option>
+
+          <option value="Inoculum">
+            Inoculum
+          </option>
+
+          <option value="Préparation biologique">
+            Préparation biologique
+          </option>
+
+          <option value="Autre">
+            Autre
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div>
+
+        <label for="batchCulture">
+          Culture source
+        </label>
+
+        <select id="batchCulture">
+
+          <option value="">
+            Chargement...
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="grid">
+
+      <div>
+
+        <label for="batchQuantity">
+          Quantité prévue
+        </label>
+
+        <input
+          id="batchQuantity"
+          type="number"
+          min="0"
+          step="any"
+          placeholder="Ex. 10"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="batchUnit">
+          Unité
+        </label>
+
+        <input
+          id="batchUnit"
+          type="text"
+          placeholder="kg, L, unités..."
+        >
+
+      </div>
+
+    </div>
+
+
+    <button
+      id="createBatchButton"
+      type="button"
+    >
+      Créer le batch
+    </button>
+
+
+    <h3>Batchs existants</h3>
+
+    <div
+      id="batchList"
+      class="batch-list"
+    >
+      Chargement...
+    </div>
+
+
+    <div
+      id="batchInfo"
+      class="info hidden"
+    ></div>
+
+
+    <div
+      id="batchStages"
+      class="hidden"
+    >
+
+      <h3>Étapes du batch</h3>
+
+      <div
+        id="batchStageList"
+        class="stage-list"
+      ></div>
+
+      <div class="batch-actions">
+
+        <button
+          id="advanceBatchButton"
+          type="button"
+        >
+          Passer à l'étape suivante
+        </button>
+
+        <button
+          id="reloadBatchButton"
+          type="button"
+          class="secondary-button"
+        >
+          Actualiser
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="batchQc"
+      class="hidden"
+    >
+
+      <h3>Contrôle qualité</h3>
+
+      <div class="muted">
+        Tous les contrôles obligatoires doivent être
+        validés ou explicitement déclarés comme dérogés
+        avant la libération du batch.
+      </div>
+
+      <div
+        id="batchQcList"
+        class="qc-list"
+      ></div>
+
+    </div>
+
+
+    <button
+      id="releaseBatchButton"
+      type="button"
+      class="hidden"
+    >
+      Libérer le batch
+    </button>
+
+  </section>
+
+
+  <!-- ======================================================
        RESULTAT
        ====================================================== -->
 
@@ -397,7 +839,7 @@
       id="result"
       class="muted"
     >
-      Aucune culture créée pour le moment.
+      Aucune opération effectuée pour le moment.
     </div>
 
   </section>
@@ -436,1788 +878,28 @@ let strainOptions = [];
 
 let referenceData = [];
 
+let cultureOptions = [];
+
+let latestBatches = [];
+
+let selectedBatchId = null;
+
+let selectedBatch = null;
+
 let initializationInProgress = false;
 
 
 /* ============================================================
-   ELEMENTS DOM
+   ETAPES STANDARD DU BATCH
    ============================================================ */
 
-const message =
-  document.getElementById("message");
-
-const authCard =
-  document.getElementById("authCard");
-
-const authEmail =
-  document.getElementById("authEmail");
-
-const authPassword =
-  document.getElementById("authPassword");
-
-const authStatus =
-  document.getElementById("authStatus");
-
-const signInButton =
-  document.getElementById("signInButton");
-
-const signUpButton =
-  document.getElementById("signUpButton");
-
-const signOutButton =
-  document.getElementById("signOutButton");
-
-const trackerCard =
-  document.getElementById("trackerCard");
-
-const resultCard =
-  document.getElementById("resultCard");
-
-const strainSelect =
-  document.getElementById("strain");
-
-const strainInfo =
-  document.getElementById("strainInfo");
-
-const cultureCodeInput =
-  document.getElementById("cultureCode");
-
-const cultureTypeSelect =
-  document.getElementById("cultureType");
-
-const protocolSelect =
-  document.getElementById("protocol");
-
-const startedAtInput =
-  document.getElementById("startedAt");
-
-const generationInfo =
-  document.getElementById("generationInfo");
-
-const createButton =
-  document.getElementById("createButton");
-
-const result =
-  document.getElementById("result");
-
-
-/* ============================================================
-   OUTILS UI
-   ============================================================ */
-
-function showMessage(
-  text,
-  type = "success"
-) {
-
-  message.innerHTML = "";
-
-  const div =
-    document.createElement("div");
-
-  div.className =
-    `card ${type}`;
-
-  div.textContent =
-    text;
-
-  message.appendChild(div);
-}
-
-
-function clearMessage() {
-
-  message.innerHTML = "";
-
-}
-
-
-function showElement(element) {
-
-  element.classList.remove("hidden");
-
-}
-
-
-function hideElement(element) {
-
-  element.classList.add("hidden");
-
-}
-
-
-/* ============================================================
-   SECURITE AFFICHAGE
-   ============================================================ */
-
-function escapeHtml(value) {
-
-  if (
-    value === null ||
-    value === undefined
-  ) {
-    return "";
-  }
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-
-/* ============================================================
-   AUTHENTIFICATION
-   ============================================================ */
-
-async function getCurrentSession() {
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.getSession();
-
-  if (error) {
-
-    throw error;
-
-  }
-
-  return data.session;
-}
-
-
-/* ============================================================
-   CLAIM BA-LABS
-   ============================================================ */
-
-/*
- * Cette fonction est volontairement appelée UNE SEULE FOIS
- * lors de l'initialisation du tracker.
- *
- * Elle appelle l'Edge Function sécurisée
- * "claim-ba-labs".
- *
- * La fonction retourne directement :
- *
- * {
- *   ok: true,
- *   organization: {
- *     id,
- *     code,
- *     name
- *   },
- *   role
- * }
- *
- * On utilise cet ID directement.
- *
- * On NE refait PAS une requête anonyme/RLS sur
- * public.organizations pour retrouver BA-LABS.
- */
-
-async function claimBALabs() {
-
-  const session =
-    await getCurrentSession();
-
-
-  if (!session) {
-
-    throw new Error(
-      "Aucune session Supabase active."
-    );
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.functions.invoke(
-      "claim-ba-labs",
-      {
-        body: {}
-      }
-    );
-
-
-  if (error) {
-
-    throw new Error(
-      error.message ||
-      "L'appel à claim-ba-labs a échoué."
-    );
-
-  }
-
-
-  if (!data) {
-
-    throw new Error(
-      "claim-ba-labs n'a retourné aucune donnée."
-    );
-
-  }
-
-
-  if (!data.ok) {
-
-    throw new Error(
-      data.error ||
-      "Le compte n'a pas pu être rattaché à BA-LABS."
-    );
-
-  }
-
-
-  if (
-    !data.organization ||
-    !data.organization.id
-  ) {
-
-    throw new Error(
-      "claim-ba-labs a réussi mais n'a pas retourné l'organisation BA-LABS."
-    );
-
-  }
-
-
-  /*
-   * POINT IMPORTANT :
-   *
-   * L'organisation est maintenant connue.
-   * Aucun SELECT sur organizations n'est nécessaire.
-   */
-
-  organization =
-    data.organization;
-
-  organizationId =
-    data.organization.id;
-
-
-  return data;
-}
-
-
-/* ============================================================
-   CONNEXION
-   ============================================================ */
-
-async function signIn() {
-
-  clearMessage();
-
-  signInButton.disabled = true;
-  signUpButton.disabled = true;
-
-  try {
-
-    const email =
-      authEmail.value.trim();
-
-    const password =
-      authPassword.value;
-
-
-    if (!email) {
-
-      throw new Error(
-        "Entrez une adresse email."
-      );
-
-    }
-
-
-    if (!password) {
-
-      throw new Error(
-        "Entrez le mot de passe."
-      );
-
-    }
-
-
-    const {
-      error
-    } =
-      await supabaseClient.auth.signInWithPassword({
-
-        email,
-        password
-
-      });
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    await refreshAuthUI();
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Erreur connexion:",
-      error
-    );
-
-    showMessage(
-      error.message ||
-      "Connexion impossible.",
-      "error"
-    );
-
-  }
-
-  finally {
-
-    signInButton.disabled = false;
-    signUpButton.disabled = false;
-
-  }
-
-}
-
-
-/* ============================================================
-   CREATION DE COMPTE
-   ============================================================ */
-
-async function signUp() {
-
-  clearMessage();
-
-  signInButton.disabled = true;
-  signUpButton.disabled = true;
-
-  try {
-
-    const email =
-      authEmail.value.trim();
-
-    const password =
-      authPassword.value;
-
-
-    if (!email) {
-
-      throw new Error(
-        "Entrez une adresse email."
-      );
-
-    }
-
-
-    if (!password) {
-
-      throw new Error(
-        "Entrez un mot de passe."
-      );
-
-    }
-
-
-    if (password.length < 6) {
-
-      throw new Error(
-        "Le mot de passe doit comporter au moins 6 caractères."
-      );
-
-    }
-
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.signUp({
-
-        email,
-
-        password,
-
-        options: {
-
-          emailRedirectTo:
-            window.location.href
-
-        }
-
-      });
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    /*
-     * Si Supabase retourne directement une session,
-     * on poursuit immédiatement.
-     */
-
-    if (data && data.session) {
-
-      await refreshAuthUI();
-
-      return;
-
-    }
-
-
-    /*
-     * Si la confirmation email est activée,
-     * Supabase ne fournit généralement pas encore
-     * de session.
-     */
-
-    showMessage(
-      "Compte créé. Vérifiez l'email de confirmation Supabase, puis revenez ici et connectez-vous.",
-      "success"
-    );
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Erreur création compte:",
-      error
-    );
-
-    showMessage(
-      error.message ||
-      "Création du compte impossible.",
-      "error"
-    );
-
-  }
-
-  finally {
-
-    signInButton.disabled = false;
-    signUpButton.disabled = false;
-
-  }
-
-}
-
-
-/* ============================================================
-   DECONNEXION
-   ============================================================ */
-
-async function signOut() {
-
-  clearMessage();
-
-  try {
-
-    await supabaseClient.auth.signOut();
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Erreur déconnexion:",
-      error
-    );
-
-  }
-
-
-  organizationId =
-    null;
-
-  organization =
-    null;
-
-  strainOptions =
-    [];
-
-  referenceData =
-    [];
-
-
-  hideElement(
-    trackerCard
-  );
-
-  hideElement(
-    resultCard
-  );
-
-  hideElement(
-    signOutButton
-  );
-
-
-  authStatus.textContent =
-    "Non connecté.";
-
-}
-
-
-/* ============================================================
-   AUTH UI
-   ============================================================ */
-
-async function refreshAuthUI() {
-
-  const session =
-    await getCurrentSession();
-
-
-  /*
-   * PAS DE SESSION
-   */
-
-  if (!session) {
-
-    hideElement(
-      trackerCard
-    );
-
-    hideElement(
-      resultCard
-    );
-
-    hideElement(
-      signOutButton
-    );
-
-
-    authStatus.textContent =
-      "Non connecté.";
-
-
-    return;
-
-  }
-
-
-  /*
-   * SESSION PRESENTE
-   */
-
-  authStatus.textContent =
-    `Session détectée : ${
-      session.user.email ||
-      session.user.id
-    }`;
-
-
-  showElement(
-    signOutButton
-  );
-
-
-  /*
-   * Initialisation BA-LABS
-   */
-
-  await initializeAuthenticatedTracker(
-    session
-  );
-
-}
-
-
-/* ============================================================
-   INITIALISATION AUTHENTIFIEE
-   ============================================================ */
-
-async function initializeAuthenticatedTracker(
-  session
-) {
-
-  /*
-   * Evite deux initialisations simultanées
-   * déclenchées par plusieurs événements auth.
-   */
-
-  if (
-    initializationInProgress
-  ) {
-
-    return;
-
-  }
-
-
-  initializationInProgress =
-    true;
-
-
-  try {
-
-    clearMessage();
-
-
-    authStatus.textContent =
-      `Connexion BA-LABS : ${
-        session.user.email ||
-        session.user.id
-      }`;
-
-
-    /*
-     * ETAPE 1
-     *
-     * Rattachement à BA-LABS.
-     *
-     * Cette fonction retourne directement
-     * l'organisation.
-     */
-
-    const claim =
-      await claimBALabs();
-
-
-    /*
-     * ETAPE 2
-     *
-     * Vérification locale.
-     */
-
-    if (
-      !organizationId
-    ) {
-
-      throw new Error(
-        "L'organisation BA-LABS n'a pas fourni d'identifiant."
-      );
-
-    }
-
-
-    /*
-     * ETAPE 3
-     *
-     * Affichage de l'état.
-     */
-
-    authStatus.textContent =
-      `Connecté : ${
-        session.user.email ||
-        session.user.id
-      } — ${
-        organization.code
-      } — rôle : ${
-        claim.role ||
-        "owner"
-      }`;
-
-
-    /*
-     * ETAPE 4
-     *
-     * Chargement des données.
-     */
-
-    await loadStrainOptions();
-
-    await loadReferenceData();
-
-
-    /*
-     * ETAPE 5
-     *
-     * Date actuelle.
-     */
-
-    setDefaultDate();
-
-
-    /*
-     * ETAPE 6
-     *
-     * Affichage du tracker.
-     */
-
-    showElement(
-      trackerCard
-    );
-
-
-    /*
-     * Affichage d'un message seulement
-     * après initialisation complète.
-     */
-
-    showMessage(
-      `BA-LABS chargée — organisation ${organization.code}.`
-    );
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Initialisation BA-LABS:",
-      error
-    );
-
-
-    hideElement(
-      trackerCard
-    );
-
-
-    showMessage(
-      error.message ||
-      "Initialisation impossible.",
-      "error"
-    );
-
-  }
-
-  finally {
-
-    initializationInProgress =
-      false;
-
-  }
-
-}
-
-
-/* ============================================================
-   DATE PAR DEFAUT
-   ============================================================ */
-
-function setDefaultDate() {
-
-  const now =
-    new Date();
-
-
-  now.setMinutes(
-    now.getMinutes() -
-    now.getTimezoneOffset()
-  );
-
-
-  startedAtInput.value =
-    now.toISOString()
-      .slice(0, 16);
-
-}
-
-
-/* ============================================================
-   SOUCHES / MATERIAUX
-   ============================================================ */
-
-async function loadStrainOptions() {
-
-  if (!organizationId) {
-
-    throw new Error(
-      "Organisation absente avant chargement des souches."
-    );
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from(
-        "v_culture_creation_options"
-      )
-      .select(`
-        organization_id,
-        material_id,
-        material_code,
-        generation,
-        material_state,
-        strain_id,
-        strain_code,
-        strain_designation,
-        organism_id,
-        scientific_name,
-        common_name
-      `)
-      .eq(
-        "organization_id",
-        organizationId
-      )
-      .order(
-        "strain_code"
-      );
-
-
-  if (error) {
-
-    throw new Error(
-      `Chargement des souches impossible : ${error.message}`
-    );
-
-  }
-
-
-  strainOptions =
-    data || [];
-
-
-  strainSelect.innerHTML =
-    "";
-
-
-  const defaultOption =
-    document.createElement(
-      "option"
-    );
-
-
-  defaultOption.value =
-    "";
-
-
-  defaultOption.textContent =
-    strainOptions.length
-      ? "Sélectionner une souche..."
-      : "Aucune souche disponible";
-
-
-  strainSelect.appendChild(
-    defaultOption
-  );
-
-
-  for (
-    const item of strainOptions
-  ) {
-
-    const option =
-      document.createElement(
-        "option"
-      );
-
-
-    option.value =
-      item.material_id;
-
-
-    const designation =
-      item.strain_designation ||
-      item.scientific_name ||
-      item.common_name ||
-      "—";
-
-
-    option.textContent =
-      `${item.strain_code} — ${designation} — G${item.generation}`;
-
-
-    strainSelect.appendChild(
-      option
-    );
-
-  }
-
-
-  updateGenerationPreview();
-
-}
-
-
-/* ============================================================
-   REFERENCES CULTURE
-   ============================================================ */
-
-async function loadReferenceData() {
-
-  if (!organizationId) {
-
-    throw new Error(
-      "Organisation absente avant chargement des références."
-    );
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from(
-        "v_culture_creation_reference"
-      )
-      .select("*")
-      .order(
-        "reference_type"
-      )
-      .order(
-        "code"
-      );
-
-
-  if (error) {
-
-    throw new Error(
-      `Chargement des références impossible : ${error.message}`
-    );
-
-  }
-
-
-  referenceData =
-    data || [];
-
-
-  loadCultureTypes();
-
-  loadProtocols();
-
-}
-
-
-/* ============================================================
-   TYPES DE CULTURE
-   ============================================================ */
-
-function loadCultureTypes() {
-
-  cultureTypeSelect.innerHTML =
-    "";
-
-
-  const defaultOption =
-    document.createElement(
-      "option"
-    );
-
-
-  defaultOption.value =
-    "";
-
-
-  defaultOption.textContent =
-    "Sélectionner...";
-
-
-  cultureTypeSelect.appendChild(
-    defaultOption
-  );
-
-
-  /*
-   * La vue existante utilise reference_type.
-   *
-   * On accepte également culture_types au cas
-   * où le libellé de la vue diffère.
-   */
-
-  const types =
-    referenceData.filter(
-      row =>
-        row.reference_type ===
-          "culture_type" ||
-        row.reference_type ===
-          "culture_types"
-    );
-
-
-  for (
-    const item of types
-  ) {
-
-    const option =
-      document.createElement(
-        "option"
-      );
-
-
-    option.value =
-      item.code;
-
-
-    option.textContent =
-      item.label ||
-      item.name ||
-      item.code;
-
-
-    cultureTypeSelect.appendChild(
-      option
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   PROTOCOLES
-   ============================================================ */
-
-function loadProtocols() {
-
-  protocolSelect.innerHTML =
-    "";
-
-
-  const defaultOption =
-    document.createElement(
-      "option"
-    );
-
-
-  defaultOption.value =
-    "";
-
-
-  defaultOption.textContent =
-    "Aucun protocole";
-
-
-  protocolSelect.appendChild(
-    defaultOption
-  );
-
-
-  const protocols =
-    referenceData.filter(
-      row =>
-        row.reference_type ===
-        "protocol"
-    );
-
-
-  for (
-    const item of protocols
-  ) {
-
-    const option =
-      document.createElement(
-        "option"
-      );
-
-
-    option.value =
-      item.code;
-
-
-    option.textContent =
-      `${item.code} — ${
-        item.name ||
-        item.label ||
-        ""
-      }`;
-
-
-    protocolSelect.appendChild(
-      option
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   APERCU GENERATION
-   ============================================================ */
-
-function updateGenerationPreview() {
-
-  const materialId =
-    strainSelect.value;
-
-
-  const selected =
-    strainOptions.find(
-      item =>
-        item.material_id ===
-        materialId
-    );
-
-
-  if (!selected) {
-
-    strainInfo.textContent =
-      "Sélectionnez une souche.";
-
-    generationInfo.textContent =
-      "Génération : —";
-
-    return;
-
-  }
-
-
-  strainInfo.innerHTML = `
-
-    <strong>
-      ${escapeHtml(
-        selected.strain_code
-      )}
-    </strong>
-
-    <br>
-
-    Organisme :
-    ${escapeHtml(
-      selected.scientific_name ||
-      selected.common_name ||
-      "—"
-    )}
-
-    <br>
-
-    Désignation :
-    ${escapeHtml(
-      selected.strain_designation ||
-      "—"
-    )}
-
-    <br>
-
-    Matériel parent :
-    <code>
-      ${escapeHtml(
-        selected.material_code
-      )}
-    </code>
-
-    <br>
-
-    Génération actuelle :
-    <strong>
-      G${escapeHtml(
-        selected.generation
-      )}
-    </strong>
-
-  `;
-
-
-  const nextGeneration =
-    Number(
-      selected.generation
-    ) + 1;
-
-
-  generationInfo.innerHTML = `
-
-    Matériel parent :
-    <code>
-      ${escapeHtml(
-        selected.material_code
-      )}
-    </code>
-
-    →
-
-    nouvelle culture :
-
-    <strong>
-      G${escapeHtml(
-        nextGeneration
-      )}
-    </strong>
-
-  `;
-
-}
-
-
-/* ============================================================
-   PROTOCOLE → VERSION
-   ============================================================ */
-
-/*
- * Nous ne supposons plus que la version s'appelle "1.0".
- *
- * On cherche la dernière version disponible.
- */
-
-async function getProtocolVersionId(
-  protocolCode
-) {
-
-  if (!protocolCode) {
-
-    return null;
-
-  }
-
-
-  const {
-    data: protocol,
-    error: protocolError
-  } =
-    await supabaseClient
-      .from("protocols")
-      .select("id")
-      .eq(
-        "organization_id",
-        organizationId
-      )
-      .eq(
-        "code",
-        protocolCode
-      )
-      .maybeSingle();
-
-
-  if (protocolError) {
-
-    throw new Error(
-      `Erreur protocole : ${protocolError.message}`
-    );
-
-  }
-
-
-  if (!protocol) {
-
-    return null;
-
-  }
-
-
-  const {
-    data: versions,
-    error: versionError
-  } =
-    await supabaseClient
-      .from("protocol_versions")
-      .select(
-        "id, version, created_at"
-      )
-      .eq(
-        "organization_id",
-        organizationId
-      )
-      .eq(
-        "protocol_id",
-        protocol.id
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      )
-      .limit(1);
-
-
-  if (versionError) {
-
-    throw new Error(
-      `Erreur version protocole : ${versionError.message}`
-    );
-
-  }
-
-
-  if (
-    !versions ||
-    versions.length === 0
-  ) {
-
-    return null;
-
-  }
-
-
-  return versions[0].id;
-
-}
-
-
-/* ============================================================
-   CREATION CULTURE
-   ============================================================ */
-
-async function createCulture() {
-
-  clearMessage();
-
-
-  const materialId =
-    strainSelect.value;
-
-
-  const cultureCode =
-    cultureCodeInput.value.trim();
-
-
-  const cultureType =
-    cultureTypeSelect.value;
-
-
-  const protocolCode =
-    protocolSelect.value;
-
-
-  const startedAt =
-    startedAtInput.value;
-
-
-  /*
-   * VALIDATIONS
-   */
-
-  if (!organizationId) {
-
-    showMessage(
-      "Organisation BA-LABS absente. Rechargez la page et reconnectez-vous.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (!materialId) {
-
-    showMessage(
-      "Sélectionnez une souche.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (!cultureCode) {
-
-    showMessage(
-      "Entrez un code de culture.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (!cultureType) {
-
-    showMessage(
-      "Sélectionnez un type de culture.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  /*
-   * SESSION
-   */
-
-  const session =
-    await getCurrentSession();
-
-
-  if (!session) {
-
-    showMessage(
-      "Votre session a expiré. Reconnectez-vous.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  createButton.disabled =
-    true;
-
-  createButton.textContent =
-    "Création...";
-
-
-  try {
-
-    /*
-     * PROTOCOLE
-     */
-
-    const protocolVersionId =
-      await getProtocolVersionId(
-        protocolCode
-      );
-
-
-    /*
-     * RPC
-     */
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.rpc(
-        "create_culture_with_generation",
-        {
-
-          p_organization_id:
-            organizationId,
-
-          p_code:
-            cultureCode,
-
-          p_culture_type:
-            cultureType,
-
-          p_parent_material_id:
-            materialId,
-
-          p_parent_culture_id:
-            null,
-
-          p_protocol_version_id:
-            protocolVersionId,
-
-          p_environment_id:
-            null,
-
-          p_experiment_id:
-            null,
-
-          p_experimental_unit_id:
-            null,
-
-          p_started_at:
-            startedAt
-              ? new Date(
-                  startedAt
-                ).toISOString()
-              : null,
-
-          p_metadata: {
-
-            source:
-              "BA Labs Culture Tracker",
-
-            interface_version:
-              "1.2"
-
-          }
-
-        }
-      );
-
-
-    if (error) {
-
-      throw new Error(
-        error.message
-      );
-
-    }
-
-
-    /*
-     * RESULTAT
-     *
-     * La RPC peut retourner un objet JSON.
-     */
-
-    const created =
-      data || {};
-
-
-    showElement(
-      resultCard
-    );
-
-
-    result.className =
-      "info success";
-
-
-    result.innerHTML = `
-
-      <strong>
-        Culture créée avec succès.
-      </strong>
-
-      <br><br>
-
-      Culture :
-      <code>
-        ${escapeHtml(
-          created.culture_code ||
-          cultureCode
-        )}
-      </code>
-
-      <br>
-
-      Matériel dérivé :
-      <code>
-        ${escapeHtml(
-          created.material_code ||
-          "—"
-        )}
-      </code>
-
-      <br>
-
-      Génération :
-      <strong>
-        G${escapeHtml(
-          created.generation ??
-          "—"
-        )}
-      </strong>
-
-      <br>
-
-      ID culture :
-      <code>
-        ${escapeHtml(
-          created.culture_id ||
-          "—"
-        )}
-      </code>
-
-      <br>
-
-      ID matériel :
-      <code>
-        ${escapeHtml(
-          created.material_id ||
-          "—"
-        )}
-      </code>
-
-    `;
-
-
-    showMessage(
-      "Culture créée dans Supabase."
-    );
-
-
-    /*
-     * Nettoyage du formulaire.
-     */
-
-    cultureCodeInput.value =
-      "";
-
-
-    /*
-     * Recharge les matériaux.
-     *
-     * Le nouveau matériel G1/G2/etc.
-     * pourra ainsi apparaître dans les options.
-     */
-
-    await loadStrainOptions();
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Création culture:",
-      error
-    );
-
-
-    showElement(
-      resultCard
-    );
-
-
-    result.className =
-      "info error";
-
-
-    result.innerHTML = `
-
-      <strong>
-        Création impossible
-      </strong>
-
-      <br><br>
-
-      ${escapeHtml(
-        error.message ||
-        String(error)
-      )}
-
-    `;
-
-
-    showMessage(
-      error.message ||
-      "La création de la culture a échoué.",
-      "error"
-    );
-
-  }
-
-  finally {
-
-    createButton.disabled =
-      false;
-
-    createButton.textContent =
-      "Créer la culture";
-
-  }
-
-}
-
-
-/* ============================================================
-   EVENEMENTS
-   ============================================================ */
-
-strainSelect.addEventListener(
-  "change",
-  updateGenerationPreview
-);
-
-
-createButton.addEventListener(
-  "click",
-  createCulture
-);
-
-
-signInButton.addEventListener(
-  "click",
-  signIn
-);
-
-
-signUpButton.addEventListener(
-  "click",
-  signUp
-);
-
-
-signOutButton.addEventListener(
-  "click",
-  signOut
-);
-
-
-/* ============================================================
-   CHANGEMENT DE SESSION
-   ============================================================ */
-
-supabaseClient.auth.onAuthStateChange(
-  (
-    event,
-    session
-  ) => {
-
-    /*
-     * Ne pas appeler directement des opérations
-     * Supabase complexes dans le callback auth.
-     *
-     * On laisse le callback terminer puis on traite
-     * l'état.
-     */
-
-    setTimeout(
-      () => {
-
-        refreshAuthUI()
-          .catch(
-            error => {
-
-              console.error(
-                "Auth state:",
-                error
-              );
-
-            }
-          );
-
-      },
-      0
-    );
-
-  }
-);
-
-
-/* ============================================================
-   DEMARRAGE
-   ============================================================ */
-
-async function init() {
-
-  try {
-
-    const session =
-      await getCurrentSession();
-
-
-    if (!session) {
-
-      authStatus.textContent =
-        "Non connecté.";
-
-      hideElement(
-        trackerCard
-      );
-
-      return;
-
-    }
-
-
-    await refreshAuthUI();
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Initialisation:",
-      error
-    );
-
-
-    showMessage(
-      error.message ||
-      "Initialisation impossible.",
-      "error"
-    );
-
-  }
-
-}
-
-
-init();
-
-</script>
-
-</body>
-</html>
+const BATCH_STAGES = [
+  "preparation",
+  "sterilization",
+  "inoculation",
+  "incubation",
+  "cultivation",
+  "harvest",
+  "formulation",
+  "packaging",
+  "
