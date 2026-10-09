@@ -1670,6 +1670,8 @@ async function initializeAuthenticatedTracker(
 
     await loadCultureOptions();
 
+    await syncPendingCultures();
+
     await loadLatestBatches();
 
     setDefaultDate();
@@ -2256,6 +2258,57 @@ async function getProtocolVersionId(
 /* ============================================================
    CREATION CULTURE
    ============================================================ */
+
+async function syncPendingCultures() {
+  if (!organizationId) return;
+
+  const { data: cultures, error } = await supabaseClient
+    .from("cultures")
+    .select("id, code")
+    .eq("organization_id", organizationId)
+    .eq("notion_sync_status", "pending")
+    .is("notion_page_id", null)
+    .order("created_at", { ascending: true })
+    .limit(20);
+
+  if (error) {
+    console.error(
+      "Erreur lors du chargement des cultures en attente :",
+      error.message
+    );
+    return;
+  }
+
+  for (const culture of cultures || []) {
+    try {
+      const { data, error: syncError } =
+        await supabaseClient.functions.invoke(
+          "sync-culture-to-notion",
+          { body: { culture_id: culture.id } }
+        );
+
+      if (syncError || !data?.ok) {
+        console.error(
+          "Échec de synchronisation Notion :",
+          culture.code,
+          syncError?.message || data?.error || "Erreur inconnue"
+        );
+      } else {
+        console.info(
+          "Culture synchronisée avec Notion :",
+          culture.code
+        );
+      }
+    } catch (err) {
+      console.error(
+        "Erreur inattendue de synchronisation :",
+        culture.code,
+        err
+      );
+    }
+  }
+}
+
 
 async function createCulture() {
 
