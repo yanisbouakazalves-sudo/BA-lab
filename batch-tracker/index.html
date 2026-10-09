@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 <html lang="fr">
 <head>
@@ -347,6 +346,40 @@
       font-size: 13px;
     }
 
+    .consent-panel {
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid #dfe5df;
+      border-radius: 10px;
+      background: #f8faf8;
+      line-height: 1.55;
+    }
+
+    .consent-option {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 10px;
+      align-items: start;
+      margin: 10px 0;
+      font-weight: 400;
+    }
+
+    .consent-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 3px 0 0;
+    }
+
+    .consent-option label {
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .consent-panel a {
+      color: #245a35;
+      text-decoration: underline;
+    }
+
     @media (max-width: 700px) {
       .grid,
       .auth-actions,
@@ -565,6 +598,47 @@
       Génération : —
     </div>
 
+    <div class="consent-panel">
+      <strong>Conditions d’utilisation et traitement des données</strong>
+      <p>
+        Les informations saisies dans BatchTracker sont enregistrées dans la base de données
+        BA Labs afin d’assurer la traçabilité des cultures, des générations et des lots.
+        L’accès à l’application nécessite l’acceptation des conditions d’utilisation.
+      </p>
+      <p>
+        La réutilisation de données pour des analyses statistiques ou des travaux de recherche
+        en mycologie, microbiologie et biologie végétale est facultative. Elle n’est pas
+        nécessaire pour créer une culture. Les données utilisées à cette fin doivent être
+        limitées à ce qui est nécessaire et, lorsque cela est possible, analysées sous une
+        forme agrégée ou dé-identifiée.
+      </p>
+      <p>
+        <a href="https://app.notion.com/p/3f473152f17181d3a52bd679904b568f" target="_blank" rel="noopener noreferrer">
+          Lire les conditions d’utilisation complètes
+        </a>
+      </p>
+
+      <div class="consent-option">
+        <input id="termsAccepted" type="checkbox" required>
+        <label for="termsAccepted">
+          J’ai lu et j’accepte les conditions d’utilisation de BA Labs BatchTracker.
+          <strong>Obligatoire pour créer une culture.</strong>
+        </label>
+      </div>
+
+      <div class="consent-option">
+        <input id="researchStatisticsConsent" type="checkbox">
+        <label for="researchStatisticsConsent">
+          J’accepte séparément que mes données de culture puissent être réutilisées à des
+          fins statistiques et de recherche en mycologie, microbiologie et biologie végétale.
+          Ce choix est facultatif et peut être refusé sans bloquer l’utilisation de BatchTracker.
+        </label>
+      </div>
+      <div class="muted">
+        Version des conditions : 2026-10-09-v1. Le choix statistique est enregistré séparément
+        de l’acceptation des conditions d’utilisation.
+      </div>
+    </div>
 
     <button
       id="createButton"
@@ -1002,6 +1076,12 @@ const generationInfo =
 
 const createButton =
   document.getElementById("createButton");
+
+const termsAcceptedCheckbox =
+  document.getElementById("termsAccepted");
+
+const researchStatisticsConsentCheckbox =
+  document.getElementById("researchStatisticsConsent");
 
 const result =
   document.getElementById("result");
@@ -2245,6 +2325,14 @@ async function createCulture() {
 
   }
 
+  if (!termsAcceptedCheckbox.checked) {
+    showMessage(
+      "Vous devez accepter les conditions d’utilisation pour créer une culture. Le consentement statistique reste facultatif.",
+      "error"
+    );
+    termsAcceptedCheckbox.focus();
+    return;
+  }
 
   const session =
     await getCurrentSession();
@@ -2270,6 +2358,62 @@ async function createCulture() {
 
 
   try {
+
+    // Enregistrer l’acceptation des conditions et le choix statistique séparément.
+    const researchStatisticsOptIn =
+      researchStatisticsConsentCheckbox.checked;
+
+    const consentTable =
+      supabaseClient.from("culture_data_consents");
+
+    const {
+      data: existingConsent,
+      error: consentLookupError
+    } = await consentTable
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("user_id", session.user.id)
+      .eq("terms_version", "2026-10-09-v1")
+      .maybeSingle();
+
+    if (consentLookupError) {
+      throw new Error(
+        `Impossible de vérifier le consentement : ${consentLookupError.message}`
+      );
+    }
+
+    const consentValues = {
+      research_statistics_opt_in: researchStatisticsOptIn,
+      research_opt_in_at: researchStatisticsOptIn
+        ? new Date().toISOString()
+        : null
+    };
+
+    let consentError;
+
+    if (existingConsent) {
+      // Conserver la date de première acceptation des conditions.
+      const updateResult = await consentTable
+        .update(consentValues)
+        .eq("id", existingConsent.id);
+      consentError = updateResult.error;
+    } else {
+      const insertResult = await consentTable
+        .insert({
+          organization_id: organizationId,
+          user_id: session.user.id,
+          terms_version: "2026-10-09-v1",
+          terms_accepted_at: new Date().toISOString(),
+          ...consentValues
+        });
+      consentError = insertResult.error;
+    }
+
+    if (consentError) {
+      throw new Error(
+        `Impossible d’enregistrer votre choix de consentement : ${consentError.message}`
+      );
+    }
 
     const protocolVersionId =
       await getProtocolVersionId(
@@ -2343,8 +2487,45 @@ async function createCulture() {
 
 
     const created =
-      data || {};
+      (Array.isArray(data) ? data[0] : data) || {};
 
+    // La culture reste créée dans Supabase même si la synchronisation Notion échoue.
+    let notionSyncMessage =
+      "Synchronisation Notion en cours ou en attente.";
+
+    if (created.culture_id) {
+      try {
+        const { data: syncData, error: syncError } =
+          await supabaseClient.functions.invoke(
+            "sync-culture-to-notion",
+            {
+              body: {
+                culture_id: created.culture_id
+              }
+            }
+          );
+
+        if (syncError) {
+          notionSyncMessage =
+            `Culture enregistrée dans Supabase. Synchronisation Notion à vérifier : ${syncError.message}`;
+        } else if (syncData && syncData.ok) {
+          notionSyncMessage =
+            "Culture synchronisée avec Notion.";
+        } else {
+          notionSyncMessage =
+            `Culture enregistrée dans Supabase. Notion : ${
+              syncData?.error || "synchronisation non confirmée"
+            }.`;
+        }
+      } catch (syncError) {
+        console.error("Synchronisation Notion:", syncError);
+        notionSyncMessage =
+          "Culture enregistrée dans Supabase, mais la synchronisation Notion a échoué. Vérifiez le statut dans Supabase.";
+      }
+    } else {
+      notionSyncMessage =
+        "Culture enregistrée dans Supabase. L’identifiant de culture n’a pas été retourné ; la synchronisation Notion n’a pas été lancée.";
+    }
 
     showElement(
       resultCard
@@ -2411,11 +2592,21 @@ async function createCulture() {
         )}
       </code>
 
+      <br><br>
+
+      <strong>Synchronisation :</strong>
+      ${escapeHtml(notionSyncMessage)}
+
     `;
 
 
     showMessage(
-      "Culture créée dans Supabase."
+      notionSyncMessage,
+      notionSyncMessage.includes("échoué") ||
+      notionSyncMessage.includes("à vérifier") ||
+      notionSyncMessage.includes("pas été lancée")
+        ? "warning"
+        : "success"
     );
 
 
@@ -4352,4 +4543,3 @@ init();
 
 </body>
 </html>
-```
